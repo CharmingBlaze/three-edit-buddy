@@ -1,6 +1,8 @@
 // Parameter types for primitives
 import type { PrimitiveParams } from './PrimitiveBuilder.js';
 
+export type { PrimitiveParams };
+
 export interface CubeParams extends PrimitiveParams {
   size?: number;
   width?: number;

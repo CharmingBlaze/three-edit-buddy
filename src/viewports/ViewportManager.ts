@@ -1,11 +1,9 @@
-import * as THREE from 'three';
 import type {
   ViewportSystemConfig,
   ViewportSystemState,
   ViewportLayout,
   ViewportEvent,
   ViewportEventListener,
-  CameraPreset,
 } from './ViewportState.js';
 import { createViewportPanel } from './ViewportPanel.js';
 
@@ -129,11 +127,13 @@ export function createViewportManager(config: ViewportManagerConfig): {
 
       // Add panel event listeners
       panel.addEventListener('preset-changed', (event) => {
-        emitEvent({
-          type: 'preset-changed',
-          panelId: event.panelId,
-          preset: event.preset,
-        });
+        if (event.preset !== undefined) {
+          emitEvent({
+            type: 'preset-changed',
+            panelId: event.panelId,
+            preset: event.preset,
+          });
+        }
       });
 
       panel.addEventListener('panel-created', (event) => {
@@ -187,7 +187,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
         container.style.flexDirection = 'row';
         container.style.flexWrap = 'wrap';
 
-        panelStates.forEach((panelState, index) => {
+        panelStates.forEach((panelState, _index) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
             panelState.element.style.width = '50%';
@@ -219,7 +219,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
         container.style.flexDirection = 'row';
         container.style.flexWrap = 'nowrap';
 
-        panelStates.forEach((panelState, index) => {
+        panelStates.forEach((panelState, _index) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
             panelState.element.style.width = '50%';
@@ -234,7 +234,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
         container.style.flexDirection = 'column';
         container.style.flexWrap = 'nowrap';
 
-        panelStates.forEach((panelState, index) => {
+        panelStates.forEach((panelState, _index) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
             panelState.element.style.width = '100%';

@@ -1,4 +1,4 @@
-import type { EditableMesh, Face, Edge, Vertex } from '../types/index.js';
+import type { EditableMesh } from '../types/index.js';
 import { isValidFace } from '../utils/faceTypes.js';
 
 /**

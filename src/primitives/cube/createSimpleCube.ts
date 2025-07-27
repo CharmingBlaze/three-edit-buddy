@@ -82,7 +82,9 @@ export function createSimpleCube(params: CubeParams = {}): EditableMesh {
     // Apply UVs to each vertex (simplified - each vertex gets the same UV on all faces)
     [v0, v1, v2, v3, v4, v5, v6, v7].forEach((vertexId, index) => {
       const uv = uvs_per_face[index % 4];
-      builder.addUV(vertexId, uv[0], uv[1]);
+      if (uv && uv[0] !== undefined && uv[1] !== undefined) {
+        builder.addUV(vertexId, uv[0], uv[1]);
+      }
     });
   }
 

@@ -97,22 +97,24 @@ export function insetFaces(
     if (insetVertexIds.length >= 3) {
       // For a quad inset face
       if (insetVertexIds.length === 4) {
-        const insetFaceId = builder.addQuad([
-          insetVertexIds[0],
-          insetVertexIds[1],
-          insetVertexIds[2],
-          insetVertexIds[3],
-        ]);
-        newInsetFaceIds.push(insetFaceId);
+        const v0 = insetVertexIds[0];
+        const v1 = insetVertexIds[1];
+        const v2 = insetVertexIds[2];
+        const v3 = insetVertexIds[3];
+        if (v0 !== undefined && v1 !== undefined && v2 !== undefined && v3 !== undefined) {
+          const insetFaceId = builder.addQuad([v0, v1, v2, v3]);
+          newInsetFaceIds.push(insetFaceId);
+        }
       }
       // For a triangle inset face
       else if (insetVertexIds.length === 3) {
-        const insetFaceId = builder.addTriangle([
-          insetVertexIds[0],
-          insetVertexIds[1],
-          insetVertexIds[2],
-        ]);
-        newInsetFaceIds.push(insetFaceId);
+        const v0 = insetVertexIds[0];
+        const v1 = insetVertexIds[1];
+        const v2 = insetVertexIds[2];
+        if (v0 !== undefined && v1 !== undefined && v2 !== undefined) {
+          const insetFaceId = builder.addTriangle([v0, v1, v2]);
+          newInsetFaceIds.push(insetFaceId);
+        }
       }
 
       // Create border faces if thickness > 0
@@ -121,14 +123,17 @@ export function insetFaces(
           const nextI = (i + 1) % vertices.length;
 
           // Create quad border face
-          const borderFaceId = builder.addQuad([
-            vertices[i].id,
-            vertices[nextI].id,
-            insetVertexIds[nextI],
-            insetVertexIds[i],
-          ]);
-
-          newBorderFaceIds.push(borderFaceId);
+          const insetV1 = insetVertexIds[nextI];
+          const insetV2 = insetVertexIds[i];
+          if (insetV1 !== undefined && insetV2 !== undefined) {
+            const borderFaceId = builder.addQuad([
+              vertices[i].id,
+              vertices[nextI].id,
+              insetV1,
+              insetV2,
+            ]);
+            newBorderFaceIds.push(borderFaceId);
+          }
         }
       }
     }
@@ -144,7 +149,7 @@ export function insetFaces(
  * @param face - The face to calculate normal for
  * @returns Normal vector
  */
-function calculateFaceNormal(mesh: EditableMesh, face: any): Vector3Like {
+function calculateFaceNormal(_mesh: EditableMesh, _face: any): Vector3Like {
   // Simplified normal calculation
   // In a real implementation, this would properly calculate the face normal
   return { x: 0, y: 1, z: 0 };

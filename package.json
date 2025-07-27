@@ -23,7 +23,7 @@
     "demo:build": "vite build src/demo --outDir dist/demo",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
-    "docs": "typedoc --out docs src/index.ts"
+    "docs": "typedoc"
   },
   "keywords": [
     "three.js",

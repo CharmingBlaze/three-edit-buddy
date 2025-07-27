@@ -17,7 +17,7 @@ export function bevelEdge(
   mesh: EditableMesh,
   edgeIds: number[],
   distance: number = 0.1,
-  segments: number = 1
+  _segments: number = 1
 ): number[] {
   if (edgeIds.length === 0) return [];
 
@@ -110,7 +110,7 @@ export function bevelEdge(
  * @param face - The face to calculate normal for
  * @returns Normal vector
  */
-function calculateSimpleNormal(mesh: EditableMesh, face: any): Vector3Like {
+function calculateSimpleNormal(_mesh: EditableMesh, _face: any): Vector3Like {
   // For a simple approximation, we'll just return a basic up vector
   // In a real implementation, this would calculate the actual face normal
   return { x: 0, y: 1, z: 0 };

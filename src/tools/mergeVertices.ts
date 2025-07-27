@@ -1,5 +1,5 @@
-import type { EditableMesh, Vertex, Vector3Like } from '../types/index.js';
-import { toVector3Like } from '../utils/math.js';
+import { EditableMesh } from '../core/EditableMesh.js';
+import type { Vector3Like } from '../types/index.js';
 
 /**
  * Merges vertices that are within a specified distance of each other
@@ -195,6 +195,6 @@ export function mergeSpecificVertices(
     return vertexIds[0]!;
   }
 
-  const result = mergeVertexGroup(mesh, vertexIds);
+  mergeVertexGroup(mesh, vertexIds);
   return vertexIds[0]!;
 }

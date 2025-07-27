@@ -1,6 +1,5 @@
-import type { EditableMesh, Edge, Vector3Like } from '../types/index.js';
+import { EditableMesh } from '../core/EditableMesh.js';
 import { PrimitiveBuilder } from '../primitives/core/PrimitiveBuilder.js';
-import { toVector3Like } from '../utils/math.js';
 
 /**
  * Subdivides an edge by adding a new vertex at its midpoint
@@ -88,9 +87,9 @@ function updateFaceForEdgeSubdivision(
 
   // Create new face(s) based on the number of vertices
   if (newVertexIds.length === 4) {
-    builder.addQuad(newVertexIds, `subdivided-face-${face.id}`);
+    builder.addQuad([newVertexIds[0]!, newVertexIds[1]!, newVertexIds[2]!, newVertexIds[3]!], `subdivided-face-${face.id}`);
   } else if (newVertexIds.length === 3) {
-    builder.addTriangle(newVertexIds, `subdivided-face-${face.id}`);
+    builder.addTriangle([newVertexIds[0]!, newVertexIds[1]!, newVertexIds[2]!], `subdivided-face-${face.id}`);
   } else {
     // N-gon: split into triangles or quads
     splitNGonIntoFaces(mesh, builder, newVertexIds, face.id);
@@ -101,7 +100,7 @@ function updateFaceForEdgeSubdivision(
  * Splits an n-gon into triangles or quads when an edge is subdivided
  */
 function splitNGonIntoFaces(
-  mesh: EditableMesh,
+  _mesh: EditableMesh,
   builder: PrimitiveBuilder,
   vertexIds: number[],
   originalFaceId: number
@@ -113,7 +112,7 @@ function splitNGonIntoFaces(
   // For simplicity, we'll create a triangle fan
   // A more sophisticated approach would try to create quads where possible
   for (let i = 1; i < vertexCount - 1; i++) {
-    const triangle = [vertexIds[0]!, vertexIds[i]!, vertexIds[i + 1]!];
+    const triangle: [number, number, number] = [vertexIds[0]!, vertexIds[i]!, vertexIds[i + 1]!];
 
     builder.addTriangle(triangle, `subdivided-face-${originalFaceId}-${i}`);
   }

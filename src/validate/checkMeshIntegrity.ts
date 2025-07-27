@@ -1,4 +1,10 @@
-import type { EditableMesh, ValidationResult } from '../types/index.js';
+import type { EditableMesh } from '../types/index.js';
+
+interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+}
 import {
   getConnectedFaces,
   getConnectedEdges,
@@ -15,14 +21,20 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
 
   // Check for orphaned vertices
   for (const vertex of mesh.vertices) {
-    if (vertex.connectedEdges.length === 0) {
+    const connectedEdges = mesh.edges.filter(edge => 
+      edge.vertexIds.includes(vertex.id)
+    );
+    if (connectedEdges.length === 0) {
       errors.push(`Orphaned vertex ${vertex.id} has no connected edges`);
     }
   }
 
   // Check for orphaned edges
   for (const edge of mesh.edges) {
-    if (edge.connectedFaces.length === 0) {
+    const connectedFaces = mesh.faces.filter(face => 
+      face.edgeIds.includes(edge.id)
+    );
+    if (connectedFaces.length === 0) {
       errors.push(`Orphaned edge ${edge.id} has no connected faces`);
     }
   }
@@ -77,9 +89,12 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
 
   // Check for non-manifold edges
   for (const edge of mesh.edges) {
-    if (edge.connectedFaces.length > 2) {
+    const connectedFaces = mesh.faces.filter(face => 
+      face.edgeIds.includes(edge.id)
+    );
+    if (connectedFaces.length > 2) {
       errors.push(
-        `Non-manifold edge ${edge.id} is connected to ${edge.connectedFaces.length} faces`
+        `Non-manifold edge ${edge.id} is connected to ${connectedFaces.length} faces`
       );
     }
   }
@@ -110,9 +125,12 @@ export function checkNonManifold(mesh: EditableMesh): ValidationResult {
 
   // Check for edges with more than 2 connected faces
   for (const edge of mesh.edges) {
-    if (edge.connectedFaces.length > 2) {
+    const connectedFaces = mesh.faces.filter(face => 
+      face.edgeIds.includes(edge.id)
+    );
+    if (connectedFaces.length > 2) {
       errors.push(
-        `Non-manifold edge ${edge.id} is connected to ${edge.connectedFaces.length} faces`
+        `Non-manifold edge ${edge.id} is connected to ${connectedFaces.length} faces`
       );
     }
   }
@@ -192,8 +210,8 @@ export function checkBoundary(mesh: EditableMesh): ValidationResult {
   // Check for vertices that are only connected to boundary edges
   for (const vertex of boundaryVertices) {
     const connectedEdges = getConnectedEdges(mesh, vertex.id);
-    const allBoundary = connectedEdges.every((edge) =>
-      isBoundaryEdge(mesh, edge.id)
+    const allBoundary = connectedEdges.every((edgeId) =>
+      isBoundaryEdge(mesh, edgeId)
     );
 
     if (allBoundary) {

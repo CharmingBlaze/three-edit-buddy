@@ -611,7 +611,7 @@ export class MeshVisualHelper {
 
     this.edgeObjects.forEach((obj) => {
       if (obj.geometry) obj.geometry.dispose();
-      if (obj.material) obj.material.dispose();
+      if (obj.material && !Array.isArray(obj.material)) obj.material.dispose();
     });
 
     this.selectionObjects.forEach((obj) => {

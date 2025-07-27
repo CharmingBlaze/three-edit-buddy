@@ -164,15 +164,12 @@ export class Selection {
     for (const vertexId of this.selectedVertices) {
       const vertex = mesh.getVertex(vertexId);
       if (vertex) {
-        // Add connected vertices
-        for (const edgeId of vertex.connectedEdges) {
-          const edge = mesh.getEdge(edgeId);
-          if (edge) {
-            const otherVertexId =
-              edge.vertexIds[0] === vertexId
-                ? edge.vertexIds[1]
-                : edge.vertexIds[0];
-            newVertices.add(otherVertexId);
+        // Add connected vertices by finding edges that contain this vertex
+        for (const edge of mesh.edges) {
+          if (edge.vertexIds[0] === vertexId) {
+            newVertices.add(edge.vertexIds[1]);
+          } else if (edge.vertexIds[1] === vertexId) {
+            newVertices.add(edge.vertexIds[0]);
           }
         }
       }
@@ -190,15 +187,16 @@ export class Selection {
     for (const faceId of this.selectedFaces) {
       const face = mesh.getFace(faceId);
       if (face) {
-        // Add faces connected by edges
-        for (const edgeId of face.edgeIds) {
-          const edge = mesh.getEdge(edgeId);
-          if (edge) {
-            for (const connectedFaceId of edge.connectedFaces) {
-              if (connectedFaceId !== faceId) {
-                newFaces.add(connectedFaceId);
-              }
-            }
+        // Add faces connected by edges by finding faces that share vertices
+        for (const otherFace of mesh.faces) {
+          if (otherFace.id === faceId) continue;
+          
+          // Check if faces share any vertices
+          const sharedVertices = face.vertexIds.filter(id => 
+            otherFace.vertexIds.includes(id)
+          );
+          if (sharedVertices.length >= 2) {
+            newFaces.add(otherFace.id);
           }
         }
       }

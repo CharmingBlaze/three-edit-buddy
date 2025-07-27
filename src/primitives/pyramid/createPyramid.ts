@@ -1,5 +1,4 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
-import { Vector3Like } from '../../types/index.js';
 
 export interface PyramidParams {
   size?: number;

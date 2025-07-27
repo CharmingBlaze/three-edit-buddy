@@ -4,8 +4,6 @@ import type {
   ViewportPanelConfig,
   ViewportPanelState,
   CameraPreset,
-  ViewportEvent,
-  ViewportEventListener,
 } from './ViewportState.js';
 import {
   createCameraFromPreset,
@@ -276,12 +274,12 @@ export function createViewportPanel(
   });
 
   // Fullscreen toggle event handlers
-  fullscreenToggle.addEventListener('maximize', (event) => {
+  fullscreenToggle.addEventListener('maximize', (_event) => {
     state.isMaximized = true;
     fullscreenToggle.setMaximized(true);
   });
 
-  fullscreenToggle.addEventListener('restore', (event) => {
+  fullscreenToggle.addEventListener('restore', (_event) => {
     state.isMaximized = false;
     fullscreenToggle.setMaximized(false);
   });

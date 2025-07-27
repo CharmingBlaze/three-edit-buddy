@@ -35,13 +35,13 @@ export function triangulateFaces(
 
     // Create triangles using fan triangulation
     for (let i = 1; i < vertexIds.length - 1; i++) {
-      const triangleId = builder.addTriangle([
-        vertexIds[0],
-        vertexIds[i],
-        vertexIds[i + 1],
-      ]);
-
-      newTriangleIds.push(triangleId);
+      const v0 = vertexIds[0];
+      const v1 = vertexIds[i];
+      const v2 = vertexIds[i + 1];
+      if (v0 !== undefined && v1 !== undefined && v2 !== undefined) {
+        const triangleId = builder.addTriangle([v0, v1, v2]);
+        newTriangleIds.push(triangleId);
+      }
     }
 
     // Delete the original face
@@ -69,25 +69,8 @@ export function triangulateMesh(mesh: EditableMesh): {
     .filter((face) => face.vertexIds.length > 3)
     .map((face) => face.id);
 
-  return triangulateFaces(mesh, nonTriangularFaceIds);
+  const newFaces = triangulateFaces(mesh, nonTriangularFaceIds);
+  return { newFaces, deletedFaces: nonTriangularFaceIds };
 }
 
-/**
- * Performs fan triangulation of a polygon
- *
- * @param vertexIds - Array of vertex IDs forming the polygon
- * @returns Array of triangles (each triangle is an array of 3 vertex IDs)
- */
-function fanTriangulate(vertexIds: number[]): number[][] {
-  if (vertexIds.length < 3) return [];
 
-  const triangles: number[][] = [];
-
-  // Create triangles using a fan approach
-  // Connect vertex 0 to all other consecutive pairs
-  for (let i = 1; i < vertexIds.length - 1; i++) {
-    triangles.push([vertexIds[0], vertexIds[i], vertexIds[i + 1]]);
-  }
-
-  return triangles;
-}

@@ -1,6 +1,5 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
 import type { Vector3Like, Vector2Like } from '../../types/index.js';
-import { generateId } from '../../utils/id.js';
 
 export interface PrimitiveParams {
   material?: {
