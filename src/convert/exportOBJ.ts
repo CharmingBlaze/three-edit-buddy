@@ -8,7 +8,7 @@ export function exportOBJ(mesh: EditableMesh): string {
   const lines: string[] = [];
   
   // Header
-  lines.push('# Exported by edit-threejs');
+  lines.push('# Exported by three-edit-buddy');
   lines.push('# Faces may be quads, tris, or n-gons');
   lines.push('');
 
@@ -53,7 +53,7 @@ export function exportOBJWithUVs(mesh: EditableMesh): string {
   const lines: string[] = [];
   
   // Header
-  lines.push('# Exported by edit-threejs with UVs');
+  lines.push('# Exported by three-edit-buddy with UVs');
   lines.push('# Faces may be quads, tris, or n-gons');
   lines.push('');
 
@@ -112,7 +112,7 @@ export function exportOBJWithMaterials(mesh: EditableMesh): { obj: string; mtl: 
   const mtlLines: string[] = [];
   
   // OBJ header
-  objLines.push('# Exported by edit-threejs with materials');
+  objLines.push('# Exported by three-edit-buddy with materials');
   objLines.push('# Faces may be quads, tris, or n-gons');
   objLines.push('');
 
@@ -187,7 +187,7 @@ export function exportOBJWithMaterials(mesh: EditableMesh): { obj: string; mtl: 
   }
 
   // MTL file
-  mtlLines.push('# Material file for edit-threejs export');
+  mtlLines.push('# Material file for three-edit-buddy export');
   mtlLines.push('');
 
   for (const material of mesh.materials) {

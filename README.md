@@ -1,9 +1,11 @@
 # Three.js Edit Buddy
 
-A comprehensive, modular 3D editing library for Three.js that supports flexible quad/tri/n-gon geometry with full topology management and advanced editing tools.
+A comprehensive, modular 3D editing library for Three.js that supports flexible quad/tri/n-gon geometry with full topology management, advanced editing tools, and an interactive demo showcasing real-time vertex editing.
 
 ## 🎯 Features
 
+- **Interactive 3D Demo**: Modern web-based demo with real-time topology editing
+- **Topology-Based Vertex Editing**: Blender-like vertex manipulation with proper mesh connectivity
 - **Flexible Face Types**: Supports triangles, quads, and n-gons with quad preference
 - **Complete Topology Management**: Full vertex/edge/face relationships with bidirectional connections
 - **Advanced Editing Tools**: Extrusion, subdivision, beveling, loop cutting, knife cutting, and more
@@ -14,37 +16,68 @@ A comprehensive, modular 3D editing library for Three.js that supports flexible 
 - **Visual Helpers**: Comprehensive Three.js visualization tools
 - **Validation & Testing**: Mesh integrity checks and comprehensive test suite
 
+## 🚀 Live Demo
 
+Experience the interactive 3D primitive demo with real-time topology editing:
+
+```bash
+npm run demo
+```
+
+**Demo Features:**
+- **6 Primitive Types**: Cube, Sphere, Cylinder, Cone, Pyramid, Plane
+- **Real-time Highlighting**: Vertices (yellow cubes), Edges (red lines), Faces (green overlays)
+- **Topology Editing**: Drag vertices to deform meshes while maintaining connectivity
+- **Blender-like Behavior**: Moving a vertex updates all connected faces and edges
+- **Modern UI**: Glassmorphism design with responsive controls
+- **Spacebar Controls**: Quick cycling through highlight modes
 
 ## 📦 Installation
 
 ```bash
-npm install edit-threejs
+npm install three-edit-buddy
 ```
 
-## 🚀 Quick Start
+## 🎮 Quick Start
+
+### Interactive Demo
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/three-edit-buddy.git
+cd three-edit-buddy
+
+# Install dependencies
+npm install
+
+# Start the interactive demo
+npm run demo
+```
+
+The demo will open in your browser at `http://localhost:3000` (or next available port).
+
+### Library Usage
 
 ```typescript
 import { 
   EditableMesh, 
   createCube, 
-  createTetrahedron,
+  createSphere,
   exportOBJ, 
   triangulateForExport,
   getFaceType,
   isQuad,
   isTriangle 
-} from 'edit-threejs';
+} from 'three-edit-buddy';
 
 // Create a cube (quads by default)
 const cube = createCube({ width: 1, height: 1, depth: 1 });
 console.log(getFaceType(cube.faces[0])); // "quad"
 console.log(isQuad(cube.faces[0])); // true
 
-// Create a tetrahedron (triangles by necessity)
-const tetrahedron = createTetrahedron({ size: 1 });
-console.log(getFaceType(tetrahedron.faces[0])); // "triangle"
-console.log(isTriangle(tetrahedron.faces[0])); // true
+// Create a sphere (mixed quads and triangles)
+const sphere = createSphere({ radius: 1, widthSegments: 8, heightSegments: 6 });
+console.log(`Vertices: ${sphere.vertices.length}, Faces: ${sphere.faces.length}`);
 
 // Export to OBJ (preserves face types)
 const objData = exportOBJ(cube);
@@ -55,8 +88,8 @@ const objData = exportOBJ(cube);
 The library includes powerful editing tools that work seamlessly with primitives:
 
 ```typescript
-import { createCube } from 'edit-threejs/primitives';
-import { extrudeFaces, subdivideEdge, mergeVertices } from 'edit-threejs/tools';
+import { createCube } from 'three-edit-buddy/primitives';
+import { extrudeFaces, subdivideEdge, mergeVertices } from 'three-edit-buddy/tools';
 
 // Create a cube and extrude its faces
 const cube = createCube({ size: 2 });
@@ -70,7 +103,6 @@ const newVertexId = subdivideEdge(sphere, edgeId);
 
 // Merge close vertices
 const mergeResult = mergeVertices(cube, 0.01);
-```
 
 // Triangulate for formats requiring triangles
 const triangulated = triangulateForExport(cube);
@@ -80,10 +112,11 @@ const triangulated = triangulateForExport(cube);
 
 ### Core Principles
 
-1. **Quad Preference**: All primitives and tools prefer quads when possible
-2. **Flexible Storage**: Faces can be triangles, quads, or n-gons as needed
-3. **Headless Core**: No Three.js dependencies in core modules
-4. **Modular Design**: One concept per file, clean exports
+1. **Topology-First**: All editing operations maintain proper mesh connectivity
+2. **Quad Preference**: All primitives and tools prefer quads when possible
+3. **Flexible Storage**: Faces can be triangles, quads, or n-gons as needed
+4. **Headless Core**: No Three.js dependencies in core modules
+5. **Modular Design**: One concept per file, clean exports
 
 ### Folder Structure
 
@@ -91,22 +124,41 @@ const triangulated = triangulateForExport(cube);
 src/
 ├── core/              # Core data structures
 │   ├── EditableMesh.ts
+│   ├── meshStats.ts
 │   └── index.ts
 ├── primitives/        # Shape generators
-│   ├── createCube.ts
-│   ├── createTetrahedron.ts
+│   ├── cube/
+│   ├── sphere/
+│   ├── cylinder/
+│   ├── cone/
+│   ├── pyramid/
+│   ├── plane/
 │   └── index.ts
 ├── convert/           # Import/export utilities
 │   ├── triangulateForExport.ts
 │   ├── exportOBJ.ts
+│   ├── toEditableMesh.ts
+│   └── index.ts
+├── tools/             # Editing tools
+│   ├── extrudeFaces.ts
+│   ├── mergeVertices.ts
+│   ├── subdivideEdge.ts
+│   └── index.ts
+├── validate/          # Validation utilities
+│   ├── validateMeshTopology.ts
+│   ├── checkMeshIntegrity.ts
 │   └── index.ts
 ├── utils/             # Shared utilities
 │   ├── math.ts
-│   ├── geometryHelpers.ts
+│   ├── faceTypes.ts
 │   ├── id.ts
 │   └── index.ts
 ├── types/             # Type definitions
 │   └── index.ts
+├── demo/              # Interactive demo
+│   ├── demo.js
+│   ├── index.html
+│   └── vite.config.js
 └── index.ts           # Main exports
 ```
 
@@ -116,7 +168,7 @@ src/
 
 #### EditableMesh
 
-The main mesh data structure that supports flexible face types.
+The main mesh data structure that supports flexible face types and topology editing.
 
 ```typescript
 const mesh = new EditableMesh();
@@ -130,9 +182,15 @@ const edge = mesh.addEdge(vertex1Id, vertex2Id);
 // Add faces (supports 3+ vertices)
 const face = mesh.addFace([v1, v2, v3, v4], [e1, e2, e3, e4]);
 
+// Move vertices (updates all connected faces/edges)
+mesh.moveVertex(vertexId, { x: 1, y: 0, z: 0 });
+
 // Get statistics
 const stats = mesh.getStats();
-console.log(`Quads: ${stats.quadCount}, Triangles: ${stats.triangleCount}, N-gons: ${stats.ngonCount}`);
+console.log(`Vertices: ${stats.vertexCount}, Edges: ${stats.edgeCount}, Faces: ${stats.faceCount}`);
+
+// Convert to Three.js BufferGeometry
+const geometry = mesh.toBufferGeometry();
 ```
 
 ### Primitives
@@ -152,12 +210,64 @@ const cube = createCube({
 });
 ```
 
-#### createTetrahedron(params: TetrahedronParams): EditableMesh
+#### createSphere(params: SphereParams): EditableMesh
 
-Creates a tetrahedron with triangular faces.
+Creates a sphere with mixed quads and triangles.
 
 ```typescript
-const tetrahedron = createTetrahedron({ size: 1 });
+const sphere = createSphere({
+  radius: 1,
+  widthSegments: 8,
+  heightSegments: 6
+});
+```
+
+#### createCylinder(params: CylinderParams): EditableMesh
+
+Creates a cylinder with configurable segments.
+
+```typescript
+const cylinder = createCylinder({
+  radiusTop: 1,
+  radiusBottom: 1,
+  height: 2,
+  radialSegments: 8,
+  heightSegments: 1
+});
+```
+
+#### createCone(params: ConeParams): EditableMesh
+
+Creates a cone with triangular faces.
+
+```typescript
+const cone = createCone({
+  radius: 1,
+  height: 2,
+  radialSegments: 8
+});
+```
+
+#### createPyramid(params: PyramidParams): EditableMesh
+
+Creates a pyramid with triangular faces.
+
+```typescript
+const pyramid = createPyramid({
+  baseWidth: 1,
+  height: 1
+});
+```
+
+#### createPlane(params: PlaneParams): EditableMesh
+
+Creates a plane with a single quad face.
+
+```typescript
+const plane = createPlane({
+  width: 2,
+  height: 2
+});
 ```
 
 ### Face Type Utilities
@@ -225,53 +335,14 @@ const triangulated = triangulateForExport(mesh);
 // All faces are now triangles
 ```
 
-#### mergeTrianglesToQuads(mesh: EditableMesh): EditableMesh
+#### toEditableMesh(geometry: THREE.BufferGeometry): EditableMesh
 
-Attempts to merge adjacent triangles into quads where topology allows.
-
-```typescript
-const quadified = mergeTrianglesToQuads(mesh);
-```
-
-### Geometry Helpers
-
-#### addQuad(mesh, v0, v1, v2, v3)
-
-Creates a quad face from four vertex positions.
+Converts a Three.js BufferGeometry to an EditableMesh for editing.
 
 ```typescript
-const result = addQuad(mesh, 
-  { x: 0, y: 0, z: 0 },
-  { x: 1, y: 0, z: 0 },
-  { x: 1, y: 1, z: 0 },
-  { x: 0, y: 1, z: 0 }
-);
-```
-
-#### addTriangle(mesh, v0, v1, v2)
-
-Creates a triangle face from three vertex positions.
-
-```typescript
-const result = addTriangle(mesh,
-  { x: 0, y: 0, z: 0 },
-  { x: 1, y: 0, z: 0 },
-  { x: 0.5, y: 1, z: 0 }
-);
-```
-
-#### addNGon(mesh, vertices)
-
-Creates an n-gon face from an array of vertex positions.
-
-```typescript
-const result = addNGon(mesh, [
-  { x: 0, y: 0, z: 0 },
-  { x: 1, y: 0, z: 0 },
-  { x: 1, y: 1, z: 0 },
-  { x: 0, y: 1, z: 0 },
-  { x: 0.5, y: 0.5, z: 1 }
-]);
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const mesh = toEditableMesh(geometry);
+// Now you can edit the mesh topology
 ```
 
 ### Advanced Editing Tools
@@ -289,7 +360,7 @@ import {
   knifeCut,
   insetFaces,
   bridgeFaces 
-} from 'edit-threejs';
+} from 'three-edit-buddy';
 
 // Extrude selected faces
 const newFaces = extrudeFaces(mesh, selection, { distance: 0.5 });
@@ -335,7 +406,7 @@ import {
   HighlightVertices,
   HighlightEdges,
   HighlightFaces 
-} from 'edit-threejs';
+} from 'three-edit-buddy';
 
 // Create transformation gizmos
 const translateGizmo = GizmoTranslate(mesh, camera, renderer);
@@ -367,7 +438,7 @@ import {
   checkFaceWinding,
   fixFaceWinding,
   getMeshStats 
-} from 'edit-threejs';
+} from 'three-edit-buddy';
 
 // Validate mesh integrity
 const isValid = validateMeshIntegrity(mesh);
@@ -383,32 +454,6 @@ fixAllFaceWinding(mesh);
 // Get detailed statistics
 const stats = getMeshStats(mesh);
 console.log(`Triangles: ${stats.triangleCount}, Quads: ${stats.quadCount}, N-gons: ${stats.ngonCount}`);
-```
-
-### Additional Primitives
-
-#### Extended Shape Library
-
-```typescript
-import { 
-  createPlane,
-  createGrid,
-  createSphere,
-  createCylinder 
-} from 'edit-threejs';
-
-// Create a plane with 4 vertices and 1 quad face
-const plane = createPlane({ width: 2, height: 2 });
-
-// Create a grid with configurable segments
-const grid = createGrid({ width: 2, height: 2, widthSegments: 4, heightSegments: 4 });
-
-// Create a sphere with quads and triangles
-const sphere = createSphere({ radius: 1, widthSegments: 8, heightSegments: 6 });
-
-// Create a cylinder with caps and body
-const cylinder = createCylinder({ radius: 1, height: 2, radialSegments: 8 });
-```
 ```
 
 ## 🎨 Face Type Philosophy
@@ -443,10 +488,16 @@ npm run build
 npm test
 ```
 
-### Running Examples
+### Running the Demo
 
 ```bash
-npx tsx src/test.ts
+npm run demo
+```
+
+### Building the Demo
+
+```bash
+npm run demo:build
 ```
 
 ## 📄 License
@@ -465,7 +516,9 @@ MIT License - see LICENSE file for details.
 
 ### v1.0.0
 - Initial release
+- Interactive 3D demo with topology editing
 - Flexible quad/tri/n-gon support
 - OBJ export with face type preservation
 - Triangulation for export formats
-- Modular, headless architecture 
+- Modular, headless architecture
+- Real-time vertex editing with proper mesh connectivity 

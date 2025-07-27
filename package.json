@@ -1,5 +1,5 @@
 {
-  "name": "edit-threejs",
+  "name": "three-edit-buddy",
   "version": "1.0.0",
   "description": "A modular editing toolkit for Three.js that enables safe and flexible 3D editing",
   "main": "dist/index.js",

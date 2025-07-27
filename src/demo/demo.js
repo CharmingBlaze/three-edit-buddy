@@ -459,8 +459,9 @@ class PrimitiveDemo {
         
         if (!positions) return;
         
-        // Create vertices from position attributes
+        // Create vertices from position attributes with proper deduplication
         const vertexMap = new Map(); // position string -> vertex ID
+        const originalToDeduped = new Map(); // original index -> deduplicated vertex ID
         
         for (let i = 0; i < positions.count; i++) {
             const x = positions.getX(i);
@@ -470,32 +471,60 @@ class PrimitiveDemo {
             // Create a unique key for this position to avoid duplicates
             const positionKey = `${x.toFixed(6)},${y.toFixed(6)},${z.toFixed(6)}`;
             
+            let vertexId;
             if (!vertexMap.has(positionKey)) {
-                const vertexId = this.vertices.length;
+                // Create new vertex
+                vertexId = this.vertices.length;
                 this.vertices.push({
                     id: vertexId,
                     position: new THREE.Vector3(x, y, z),
                     connectedFaces: []
                 });
                 vertexMap.set(positionKey, vertexId);
+            } else {
+                // Use existing vertex
+                vertexId = vertexMap.get(positionKey);
             }
+            
+            // Map original index to deduplicated vertex ID
+            originalToDeduped.set(i, vertexId);
         }
         
-        // Create faces from indices
+        // Create faces from indices using the proper vertex mapping
         if (indices) {
             for (let i = 0; i < indices.count; i += 3) {
-                const v1 = indices.getX(i);
-                const v2 = indices.getY(i);
-                const v3 = indices.getZ(i);
+                const originalV1 = indices.getX(i);
+                const originalV2 = indices.getY(i);
+                const originalV3 = indices.getZ(i);
                 
-                // Get the actual vertex positions and find their IDs
-                const pos1 = `${positions.getX(v1).toFixed(6)},${positions.getY(v1).toFixed(6)},${positions.getZ(v1).toFixed(6)}`;
-                const pos2 = `${positions.getX(v2).toFixed(6)},${positions.getY(v2).toFixed(6)},${positions.getZ(v2).toFixed(6)}`;
-                const pos3 = `${positions.getX(v3).toFixed(6)},${positions.getY(v3).toFixed(6)},${positions.getZ(v3).toFixed(6)}`;
+                // Map to deduplicated vertex IDs
+                const vertexId1 = originalToDeduped.get(originalV1);
+                const vertexId2 = originalToDeduped.get(originalV2);
+                const vertexId3 = originalToDeduped.get(originalV3);
                 
-                const vertexId1 = vertexMap.get(pos1);
-                const vertexId2 = vertexMap.get(pos2);
-                const vertexId3 = vertexMap.get(pos3);
+                // Add face
+                const faceId = this.faces.length;
+                this.faces.push({
+                    id: faceId,
+                    vertexIds: [vertexId1, vertexId2, vertexId3]
+                });
+                
+                // Update vertex connections
+                this.vertices[vertexId1].connectedFaces.push(faceId);
+                this.vertices[vertexId2].connectedFaces.push(faceId);
+                this.vertices[vertexId3].connectedFaces.push(faceId);
+                
+                // Add edges
+                this.addEdge(vertexId1, vertexId2);
+                this.addEdge(vertexId2, vertexId3);
+                this.addEdge(vertexId3, vertexId1);
+            }
+        } else {
+            // Handle non-indexed geometry (create faces from position array)
+            for (let i = 0; i < positions.count; i += 3) {
+                const vertexId1 = originalToDeduped.get(i);
+                const vertexId2 = originalToDeduped.get(i + 1);
+                const vertexId3 = originalToDeduped.get(i + 2);
                 
                 // Add face
                 const faceId = this.faces.length;

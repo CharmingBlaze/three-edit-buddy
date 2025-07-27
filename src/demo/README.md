@@ -1,154 +1,266 @@
-# Three Edit Buddy - Primitive Demo 2025
+# Three Edit Buddy - Interactive 3D Demo
 
-A modern, interactive 3D demo showcasing all the primitive geometries from the Three Edit Buddy library with real-time highlighting capabilities.
+A modern, interactive 3D primitive demo showcasing real-time topology editing with Blender-like vertex manipulation.
 
-## 🚀 Features
+## 🎮 Features
 
 ### **Interactive Primitives**
-- **Cube**: 14 vertices, 19 edges, 6 faces (Quad-based)
-- **Sphere**: 42 vertices, 80 edges, 40 faces (Mixed quads + triangles)
-- **Cylinder**: 18 vertices, 40 edges, 24 faces (Mixed quads + triangles)
-- **Cone**: 10 vertices, 24 edges, 16 faces (Triangular)
-- **Pyramid**: 6 vertices, 12 edges, 8 faces (Triangular)
-- **Plane**: 4 vertices, 4 edges, 1 face (Quad-based)
+- **6 Primitive Types**: Cube, Sphere, Cylinder, Cone, Pyramid, Plane
+- **Real-time Switching**: Click buttons to instantly switch between primitives
+- **Live Statistics**: See actual vertex, edge, and face counts for each primitive
+- **Topology-based**: All primitives use proper mesh topology with shared vertices
 
-### **Highlight Modes**
-- **Vertices**: Yellow spheres highlight all mesh vertices
-- **Edges**: Red cylinders highlight all mesh edges
-- **Faces**: Green transparent overlays highlight all mesh faces
-- **None**: Clean view without highlights
+### **Visual Highlighting**
+- **Vertex Mode**: Yellow cubes mark all unique vertices
+- **Edge Mode**: Red lines connect vertices along mesh edges
+- **Face Mode**: Green overlays show individual faces
+- **Real-time Updates**: Highlights update immediately when vertices are moved
+
+### **Topology Editing**
+- **Drag & Drop**: Click and drag yellow vertex cubes to deform meshes
+- **Blender-like Behavior**: Moving a vertex updates all connected faces and edges
+- **Mesh Connectivity**: Proper topology is maintained throughout all operations
+- **Live Geometry Updates**: Three.js geometry updates in real-time
 
 ### **Modern UI**
-- Glassmorphism design with backdrop blur effects
-- Responsive layout that works on all screen sizes
-- Real-time statistics display for each primitive
-- Smooth animations and transitions
-
-## 🎮 Controls
-
-### **Mouse Controls**
-- **Left Click + Drag**: Rotate camera around the primitive
-- **Scroll**: Zoom in/out
-- **Right Click + Drag**: Pan camera
-
-### **Keyboard Controls**
-- **Spacebar**: Cycle through highlight modes (None → Vertices → Edges → Faces)
-
-### **UI Controls**
-- **Primitive Buttons**: Switch between different 3D primitives
-- **Highlight Mode Buttons**: Directly select highlight mode
-- **Real-time Stats**: View vertex, edge, and face counts for each primitive
-
-## 🛠️ Technical Details
-
-### **Built With**
-- **Three.js**: 3D graphics rendering
-- **Vite**: Fast development server and build tool
-- **TypeScript**: Type-safe JavaScript
-- **Modern CSS**: Glassmorphism effects and responsive design
-
-### **Architecture**
-- **Modular Design**: Each primitive is created using the Three Edit Buddy library
-- **Real-time Conversion**: EditableMesh objects are converted to Three.js geometries
-- **Efficient Highlighting**: Dynamic creation and disposal of highlight objects
-- **Memory Management**: Proper cleanup of geometries and materials
-
-### **Performance Features**
-- **Vertex Deduplication**: Automatic handling of shared vertices
-- **Efficient Rendering**: Optimized geometry creation and material usage
-- **Responsive Design**: Adapts to different screen sizes and pixel densities
-- **Smooth Interactions**: 60fps animations with proper frame timing
+- **Glassmorphism Design**: Beautiful frosted glass effect with backdrop blur
+- **Responsive Controls**: Works on desktop and mobile devices
+- **Keyboard Shortcuts**: Spacebar to cycle through highlight modes
+- **Camera Controls**: Mouse to rotate, scroll to zoom
 
 ## 🚀 Getting Started
 
-### **Prerequisites**
-- Node.js 16+ 
-- npm or yarn
-
-### **Installation**
+### **Quick Start**
 ```bash
 # Install dependencies
 npm install
 
-# Start the demo server
+# Start the demo
 npm run demo
 ```
 
-The demo will automatically open in your default browser at `http://localhost:3000`.
+The demo will open automatically in your browser at `http://localhost:3000` (or next available port).
 
-### **Build for Production**
-```bash
-# Build the demo
-npm run demo:build
+### **Controls**
+
+#### **Primitive Selection**
+- Click any primitive button (Cube, Sphere, Cylinder, etc.) to switch
+- Each primitive shows its actual topology statistics
+
+#### **Highlight Modes**
+- **None**: Normal view without highlights
+- **Vertices**: Yellow cubes show all vertices
+- **Edges**: Red lines show all edges
+- **Faces**: Green overlays show all faces
+
+#### **Vertex Editing**
+1. Click the **"Vertices"** button to enter vertex mode
+2. **Click and drag** any yellow cube to move that vertex
+3. Watch as the entire mesh deforms while maintaining connectivity
+4. All connected faces and edges automatically follow the vertex movement
+
+#### **Camera Controls**
+- **Left Click + Drag**: Rotate camera around the mesh
+- **Scroll Wheel**: Zoom in/out
+- **Spacebar**: Cycle through highlight modes
+
+## 🏗️ Technical Architecture
+
+### **Topology System**
+The demo uses a custom topology system that maintains proper mesh connectivity:
+
+```javascript
+// Simple topology structure
+this.vertices = []; // { id, position, connectedFaces }
+this.faces = [];    // { id, vertexIds }
+this.edges = [];    // { id, vertexIds }
 ```
 
-The built files will be available in `dist/demo/`.
+### **Key Components**
 
-## 🎨 Customization
+#### **Geometry Conversion**
+```javascript
+convertGeometryToTopology(geometry) {
+  // Converts Three.js BufferGeometry to topology system
+  // Handles vertex deduplication and face/edge creation
+}
+```
 
-### **Adding New Primitives**
-1. Create your primitive function in the primitives directory
-2. Add it to the `primitiveCreators` object in `demo.js`
-3. Add corresponding stats to the `primitiveStats` object
-4. Add a button to the HTML
+#### **Vertex Movement**
+```javascript
+moveVertex(vertexId, newPosition) {
+  // Updates vertex position
+  // Automatically updates all connected faces/edges
+  // Rebuilds Three.js geometry
+}
+```
 
-### **Modifying Highlight Colors**
-Edit the highlight colors in the demo.js file:
-- **Vertices**: `0xffff00` (Yellow)
-- **Edges**: `0xff0000` (Red)  
-- **Faces**: `0x00ff00` (Green)
+#### **Real-time Updates**
+```javascript
+updateGeometryFromTopology() {
+  // Rebuilds Three.js BufferGeometry from topology
+  // Updates vertex normals
+  // Maintains proper indexing
+}
+```
 
-### **Changing Materials**
-Modify the material properties in the `primitiveCreators` object to change colors, opacity, and other material properties.
+### **Three.js Integration**
+- **Direct Geometry Creation**: Uses Three.js built-in geometries for primitives
+- **Topology Conversion**: Converts to editable topology system
+- **Real-time Rendering**: Updates geometry immediately during editing
+- **Proper Cleanup**: Disposes of old geometries to prevent memory leaks
+
+## 🎨 UI Design
+
+### **Glassmorphism Style**
+- **Backdrop Blur**: Modern frosted glass effect
+- **Semi-transparent Backgrounds**: Subtle transparency with blur
+- **Gradient Borders**: Beautiful color gradients
+- **Smooth Animations**: Hover effects and transitions
+
+### **Color Scheme**
+- **Primary**: Purple gradient (#667eea to #764ba2)
+- **Vertices**: Yellow (#ffff00)
+- **Edges**: Red (#ff0000)
+- **Faces**: Green (#00ff00)
+- **Background**: Dark gradient (#0f0f23 to #16213e)
+
+### **Typography**
+- **Font**: Inter (with system fallbacks)
+- **Weights**: 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
+- **Sizes**: 11px to 24px for different UI elements
 
 ## 🔧 Development
 
 ### **File Structure**
 ```
 src/demo/
-├── index.html          # Main HTML file
-├── demo.js             # Main demo logic
-├── vite.config.js      # Vite configuration
-└── README.md           # This file
+├── demo.js          # Main demo logic
+├── index.html       # HTML structure and styles
+├── vite.config.js   # Vite configuration
+└── README.md        # This documentation
 ```
 
-### **Key Components**
-- **PrimitiveDemo Class**: Main demo controller
-- **convertToThreeMesh()**: Converts EditableMesh to Three.js geometry
-- **highlightVertices/Edges/Faces()**: Highlight rendering functions
-- **setupLighting()**: Three-point lighting setup
+### **Key Classes**
+
+#### **PrimitiveDemo**
+Main demo class that handles:
+- Three.js scene setup and rendering
+- Primitive creation and switching
+- Topology system management
+- Vertex editing and interaction
+- UI updates and event handling
+
+#### **Topology System**
+Custom topology management:
+- Vertex deduplication and indexing
+- Face and edge creation
+- Real-time geometry updates
+- Proper mesh connectivity maintenance
+
+### **Building**
+```bash
+# Development
+npm run demo
+
+# Production build
+npm run demo:build
+```
 
 ## 🎯 Use Cases
 
 ### **Educational**
-- Learn about 3D mesh topology
-- Understand vertex, edge, and face relationships
-- Visualize different primitive types
+- **3D Modeling Concepts**: Learn about vertices, edges, and faces
+- **Topology Understanding**: See how mesh connectivity works
+- **Real-time Editing**: Experience immediate visual feedback
 
 ### **Development**
-- Test primitive creation functions
-- Debug mesh topology issues
-- Validate geometry conversion
+- **Three.js Testing**: Test geometry creation and manipulation
+- **Topology Validation**: Verify mesh integrity and connectivity
+- **Performance Testing**: Measure real-time geometry updates
 
-### **Presentation**
-- Showcase library capabilities
-- Demonstrate interactive features
-- Present technical concepts visually
+### **Demonstration**
+- **Library Showcase**: Demonstrate the library's capabilities
+- **Feature Testing**: Test new editing tools and primitives
+- **User Experience**: Validate UI/UX design decisions
 
 ## 🐛 Troubleshooting
 
 ### **Common Issues**
-- **Demo won't load**: Check if all dependencies are installed
-- **Primitives not showing**: Verify Three.js is properly imported
-- **Highlights not working**: Check browser console for errors
-- **Performance issues**: Reduce primitive complexity or disable shadows
+
+#### **Demo Won't Start**
+```bash
+# Check if port is in use
+npm run demo
+# Vite will automatically find next available port
+```
+
+#### **Vertex Editing Not Working**
+1. Make sure you're in **"Vertices"** mode
+2. Click directly on the yellow cubes
+3. Drag slowly for better control
+4. Check browser console for errors
+
+#### **Performance Issues**
+- Reduce primitive complexity (fewer segments)
+- Close other browser tabs
+- Check for memory leaks in browser dev tools
 
 ### **Browser Compatibility**
 - **Chrome/Edge**: Full support
 - **Firefox**: Full support
 - **Safari**: Full support (with webkit prefixes)
-- **Mobile**: Responsive design works on mobile browsers
+- **Mobile**: Touch controls supported
+
+## 📈 Performance
+
+### **Optimizations**
+- **Geometry Disposal**: Proper cleanup of old geometries
+- **Efficient Topology**: Minimal vertex duplication
+- **Real-time Updates**: Optimized geometry rebuilding
+- **Memory Management**: Automatic cleanup of highlight objects
+
+### **Benchmarks**
+- **Cube**: 8 vertices, 12 edges, 6 faces
+- **Sphere**: ~42 vertices, ~80 edges, ~40 faces
+- **Cylinder**: ~18 vertices, ~40 edges, ~24 faces
+- **Cone**: ~10 vertices, ~24 edges, ~16 faces
+- **Pyramid**: 5 vertices, 8 edges, 5 faces
+- **Plane**: 4 vertices, 4 edges, 1 face
+
+## 🔮 Future Enhancements
+
+### **Planned Features**
+- **Edge Editing**: Drag edges to modify mesh topology
+- **Face Editing**: Select and manipulate entire faces
+- **Multiple Selection**: Select multiple vertices/edges/faces
+- **Undo/Redo**: History system for editing operations
+- **Export Options**: Save edited meshes to various formats
+
+### **Advanced Tools**
+- **Subdivision**: Real-time mesh subdivision
+- **Smoothing**: Mesh smoothing algorithms
+- **Symmetry**: Mirror editing operations
+- **Constraints**: Limit vertex movement to planes/axes
+
+### **UI Improvements**
+- **Custom Controls**: Sliders for precise editing
+- **Mini-map**: Overview of mesh structure
+- **Statistics Panel**: Detailed mesh information
+- **Theme Support**: Light/dark mode toggle
 
 ## 📝 License
 
-This demo is part of the Three Edit Buddy project and follows the same MIT license. 
+MIT License - see main project LICENSE file for details.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test the demo thoroughly
+5. Submit a pull request
+
+---
+
+**Enjoy exploring 3D topology editing!** 🎉 
