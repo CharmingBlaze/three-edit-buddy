@@ -1,0 +1,39 @@
+{
+  "name": "edit-threejs",
+  "version": "1.0.0",
+  "description": "A modular editing toolkit for Three.js that enables safe and flexible 3D editing",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "demo": "npx vite src/demo --port 3000 --open",
+    "demo:build": "npx vite build src/demo --outDir dist/demo"
+  },
+  "keywords": [
+    "three.js",
+    "3d",
+    "mesh",
+    "editing",
+    "geometry"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "three": ">=0.150.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.3.0",
+    "vite": "^5.4.19",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "three": ">=0.150.0"
+  }
+}
