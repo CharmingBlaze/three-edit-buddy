@@ -1,6 +1,5 @@
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 export default [
   // Global ignores
@@ -20,9 +19,6 @@ export default [
 
   // TypeScript files
   ...tseslint.configs.recommended,
-
-  // Prettier config - must be last
-  eslintPluginPrettierRecommended,
 
   // Custom rules
   {
