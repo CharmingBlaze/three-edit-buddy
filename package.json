@@ -21,7 +21,7 @@
     "test:watch": "vitest --watch",
     "demo": "vite src/demo --port 3000 --open",
     "demo:build": "vite build src/demo --outDir dist/demo",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint . --ext .ts,.tsx --debug",
     "format": "prettier --write .",
     "docs": "typedoc"
   },
