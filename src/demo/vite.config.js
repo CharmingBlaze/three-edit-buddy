@@ -5,19 +5,19 @@ export default defineConfig({
   root: '.',
   build: {
     outDir: '../../dist/demo',
-    emptyOutDir: true
+    emptyOutDir: true,
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, '../')
+      '@': resolve(__dirname, '../'),
     },
-    extensions: ['.ts', '.js', '.json']
+    extensions: ['.ts', '.js', '.json'],
   },
   server: {
     port: 3000,
-    open: true
+    open: true,
   },
   optimizeDeps: {
-    include: ['three']
-  }
-}); 
+    include: ['three'],
+  },
+});

@@ -4,14 +4,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 /**
  * Available camera/view presets
  */
-export type CameraPreset = 
-  | 'top' 
-  | 'front' 
-  | 'right' 
-  | 'left' 
-  | 'back' 
-  | 'bottom' 
-  | 'perspective' 
+export type CameraPreset =
+  | 'top'
+  | 'front'
+  | 'right'
+  | 'left'
+  | 'back'
+  | 'bottom'
+  | 'perspective'
   | 'isometric';
 
 /**
@@ -141,7 +141,7 @@ export interface CameraPresetConfig {
 /**
  * Viewport event types
  */
-export type ViewportEventType = 
+export type ViewportEventType =
   | 'panel-created'
   | 'panel-destroyed'
   | 'preset-changed'
@@ -163,4 +163,4 @@ export interface ViewportEvent {
 /**
  * Viewport event listener
  */
-export type ViewportEventListener = (event: ViewportEvent) => void; 
+export type ViewportEventListener = (event: ViewportEvent) => void;

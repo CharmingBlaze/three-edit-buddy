@@ -4,12 +4,12 @@
 
 // Core visual helper
 export { MeshVisualHelper } from './MeshVisualHelper.js';
-export type { 
-  MeshVisualOptions, 
-  VertexVisualOptions, 
-  EdgeVisualOptions, 
-  FaceVisualOptions, 
-  SelectionVisualOptions 
+export type {
+  MeshVisualOptions,
+  VertexVisualOptions,
+  EdgeVisualOptions,
+  FaceVisualOptions,
+  SelectionVisualOptions,
 } from './MeshVisualHelper.js';
 
 // Existing visual helpers

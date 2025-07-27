@@ -16,6 +16,7 @@ A modern, modular primitive creation system for 3D mesh generation. This system 
 ## Available Primitives
 
 ### Cube
+
 ```typescript
 import { createCube } from './primitives/index.js';
 
@@ -24,11 +25,12 @@ const cube = createCube({
   widthSegments: 3,
   heightSegments: 3,
   depthSegments: 3,
-  material: { name: 'cube-material', color: { x: 1, y: 0.5, z: 0.2 } }
+  material: { name: 'cube-material', color: { x: 1, y: 0.5, z: 0.2 } },
 });
 ```
 
 ### Sphere
+
 ```typescript
 import { createSphere } from './primitives/index.js';
 
@@ -36,11 +38,12 @@ const sphere = createSphere({
   radius: 1.5,
   widthSegments: 12,
   heightSegments: 8,
-  material: { name: 'sphere-material', color: { x: 0.2, y: 0.8, z: 1 } }
+  material: { name: 'sphere-material', color: { x: 0.2, y: 0.8, z: 1 } },
 });
 ```
 
 ### Cylinder
+
 ```typescript
 import { createCylinder } from './primitives/index.js';
 
@@ -49,11 +52,12 @@ const cylinder = createCylinder({
   radiusBottom: 1,
   height: 3,
   radialSegments: 16,
-  openEnded: false
+  openEnded: false,
 });
 ```
 
 ### Cone
+
 ```typescript
 import { createCone } from './primitives/index.js';
 
@@ -61,22 +65,24 @@ const cone = createCone({
   radiusBottom: 1,
   height: 2,
   radialSegments: 12,
-  openEnded: true
+  openEnded: true,
 });
 ```
 
 ### Pyramid
+
 ```typescript
 import { createPyramid } from './primitives/index.js';
 
 const pyramid = createPyramid({
   size: 1.5,
   height: 2,
-  segments: 6
+  segments: 6,
 });
 ```
 
 ### Plane
+
 ```typescript
 import { createPlane } from './primitives/index.js';
 
@@ -84,13 +90,14 @@ const plane = createPlane({
   width: 4,
   height: 3,
   widthSegments: 8,
-  heightSegments: 6
+  heightSegments: 6,
 });
 ```
 
 ## Core System
 
 ### PrimitiveBuilder
+
 The `PrimitiveBuilder` class handles vertex, edge, and face creation with automatic deduplication:
 
 ```typescript
@@ -110,6 +117,7 @@ builder.addTriangle([v1, v2, v3], 'triangle-name');
 ```
 
 ### Parameter Types
+
 All primitives use strongly-typed parameters:
 
 ```typescript
@@ -117,12 +125,12 @@ import type { CubeParams, SphereParams } from './primitives/index.js';
 
 const cubeParams: CubeParams = {
   size: 2,
-  material: { name: 'my-material' }
+  material: { name: 'my-material' },
 };
 
 const sphereParams: SphereParams = {
   radius: 1.5,
-  widthSegments: 12
+  widthSegments: 12,
 };
 ```
 
@@ -135,8 +143,8 @@ const mesh = createCube({
   uvs: {
     enabled: true,
     scale: { x: 2, y: 1 },
-    offset: { x: 0, y: 0 }
-  }
+    offset: { x: 0, y: 0 },
+  },
 });
 ```
 
@@ -150,8 +158,8 @@ const mesh = createSphere({
     name: 'sphere-material',
     color: { x: 1, y: 0, z: 0 }, // Red
     opacity: 0.8,
-    transparent: true
-  }
+    transparent: true,
+  },
 });
 ```
 
@@ -225,4 +233,4 @@ To add a new primitive:
 4. Add exports to `index.ts`
 5. Update this README
 
-The system is designed to be easily extensible while maintaining consistency and quality. 
+The system is designed to be easily extensible while maintaining consistency and quality.

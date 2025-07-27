@@ -18,25 +18,28 @@ export interface HighlightEdgesOptions {
  * @param options Configuration options
  * @returns A Three.js Object3D representing the edge highlights
  */
-export function HighlightEdges(edgeIds: number[], options: HighlightEdgesOptions = {}): Object3D {
+export function HighlightEdges(
+  edgeIds: number[],
+  options: HighlightEdgesOptions = {}
+): Object3D {
   const {
     color = 0x0000ff, // Blue
     width = 2,
-    visible = true
+    visible = true,
   } = options;
-  
+
   // Create the highlights object
   const highlights = new Object3D();
-  
+
   // In a real implementation, this would create visual highlights
   // for each edge in the edgeIds array
-  
+
   // Apply options
   highlights.visible = visible;
-  
+
   // Store edge IDs and options for later updates
   (highlights as any).edgeIds = edgeIds;
   (highlights as any).highlightOptions = { color, width };
-  
+
   return highlights;
 }

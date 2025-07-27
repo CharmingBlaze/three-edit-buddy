@@ -3,13 +3,16 @@
  */
 
 import { UVGridHelper, UVGridHelperOptions } from './UVGridHelper.js';
-import { UVSelectionHighlight, UVSelectionHighlightOptions } from './UVSelectionHighlight.js';
+import {
+  UVSelectionHighlight,
+  UVSelectionHighlightOptions,
+} from './UVSelectionHighlight.js';
 
 export {
   UVGridHelper,
   UVGridHelperOptions,
   UVSelectionHighlight,
-  UVSelectionHighlightOptions
+  UVSelectionHighlightOptions,
 };
 
 // TODO: Implement in the future

@@ -18,25 +18,28 @@ export interface FaceHandlesOptions {
  * @param options Configuration options
  * @returns A Three.js Object3D representing the face handles
  */
-export function FaceHandles(faceIds: number[], options: FaceHandlesOptions = {}): Object3D {
+export function FaceHandles(
+  faceIds: number[],
+  options: FaceHandlesOptions = {}
+): Object3D {
   const {
     color = 0xffff00, // Yellow
     size = 0.1,
-    visible = true
+    visible = true,
   } = options;
-  
+
   // Create the handles object
   const handles = new Object3D();
-  
+
   // In a real implementation, this would create visual handles
   // for each face in the faceIds array
-  
+
   // Apply options
   handles.visible = visible;
-  
+
   // Store face IDs and options for later updates
   (handles as any).faceIds = faceIds;
   (handles as any).handleOptions = { color, size };
-  
+
   return handles;
 }

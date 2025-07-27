@@ -27,16 +27,21 @@ export function GridHelper3D(options: GridHelper3DOptions = {}): GridHelper {
     divisions = 20,
     centerColor = 0x444444,
     gridColor = 0x888888,
-    opacity = 1.0
+    opacity = 1.0,
   } = options;
 
   // Create the grid helper
-  const gridHelper = new GridHelper(size, divisions, new Color(centerColor), new Color(gridColor));
-  
+  const gridHelper = new GridHelper(
+    size,
+    divisions,
+    new Color(centerColor),
+    new Color(gridColor)
+  );
+
   // Set grid opacity if needed
   if (opacity < 1.0) {
     if (gridHelper.material instanceof Array) {
-      gridHelper.material.forEach(mat => {
+      gridHelper.material.forEach((mat) => {
         mat.transparent = true;
         mat.opacity = opacity;
       });
@@ -49,7 +54,7 @@ export function GridHelper3D(options: GridHelper3DOptions = {}): GridHelper {
   // Position the grid on the XZ plane (y=0)
   gridHelper.position.set(0, 0, 0);
   gridHelper.rotation.set(0, 0, 0);
-  
+
   // Add a name for easy identification
   gridHelper.name = 'GridHelper3D';
 

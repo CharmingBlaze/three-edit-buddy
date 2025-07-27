@@ -1,4 +1,13 @@
-import type { EditableMesh as IEditableMesh, Vertex, Edge, Face, Material, UV, Vector3Like, Vector2Like } from '../types/index.js';
+import type {
+  EditableMesh as IEditableMesh,
+  Vertex,
+  Edge,
+  Face,
+  Material,
+  UV,
+  Vector3Like,
+  Vector2Like,
+} from '../types/index.js';
 import { generateId } from '../utils/id.js';
 import * as THREE from 'three';
 
@@ -13,7 +22,7 @@ export class EditableMesh implements IEditableMesh {
     const vertex: Vertex = {
       id: generateId(),
       position,
-      name
+      name,
     };
     this.vertices.push(vertex);
     return vertex;
@@ -23,7 +32,7 @@ export class EditableMesh implements IEditableMesh {
     const edge: Edge = {
       id: generateId(),
       vertexIds: [vertexId1, vertexId2],
-      name
+      name,
     };
     this.edges.push(edge);
     return edge;
@@ -34,19 +43,24 @@ export class EditableMesh implements IEditableMesh {
       id: generateId(),
       vertexIds,
       edgeIds,
-      name
+      name,
     };
     this.faces.push(face);
     return face;
   }
 
-  addMaterial(name: string, color?: Vector3Like, opacity?: number, transparent?: boolean): Material {
+  addMaterial(
+    name: string,
+    color?: Vector3Like,
+    opacity?: number,
+    transparent?: boolean
+  ): Material {
     const material: Material = {
       id: generateId(),
       name,
       color,
       opacity,
-      transparent
+      transparent,
     };
     this.materials.push(material);
     return material;
@@ -56,7 +70,7 @@ export class EditableMesh implements IEditableMesh {
     const uv: UV = {
       id: generateId(),
       vertexId,
-      position
+      position,
     };
     this.uvs.push(uv);
     return uv;
@@ -64,63 +78,65 @@ export class EditableMesh implements IEditableMesh {
 
   // --- Compatibility methods for visuals and conversion ---
   getVertex(vertexId: number): Vertex | undefined {
-    return this.vertices.find(v => v.id === vertexId);
+    return this.vertices.find((v) => v.id === vertexId);
   }
 
   getEdge(edgeId: number): Edge | undefined {
-    return this.edges.find(e => e.id === edgeId);
+    return this.edges.find((e) => e.id === edgeId);
   }
 
   getFace(faceId: number): Face | undefined {
-    return this.faces.find(f => f.id === faceId);
+    return this.faces.find((f) => f.id === faceId);
   }
 
   getUVsForVertex(vertexId: number): Array<{ coordinates: Vector2Like }> {
     // Return all UVs for this vertex, wrapped in { coordinates }
-    return this.uvs.filter(uv => uv.vertexId === vertexId).map(uv => ({ coordinates: uv.position }));
+    return this.uvs
+      .filter((uv) => uv.vertexId === vertexId)
+      .map((uv) => ({ coordinates: uv.position }));
   }
 
   // --- Additional utility methods ---
-  
+
   /**
    * Removes a vertex and all associated edges and faces
    * @param vertexId The ID of the vertex to remove
    */
   removeVertex(vertexId: number): void {
     // Remove the vertex
-    this.vertices = this.vertices.filter(v => v.id !== vertexId);
-    
+    this.vertices = this.vertices.filter((v) => v.id !== vertexId);
+
     // Remove edges connected to this vertex
-    this.edges = this.edges.filter(e => !e.vertexIds.includes(vertexId));
-    
+    this.edges = this.edges.filter((e) => !e.vertexIds.includes(vertexId));
+
     // Remove faces that reference this vertex
-    this.faces = this.faces.filter(f => !f.vertexIds.includes(vertexId));
-    
+    this.faces = this.faces.filter((f) => !f.vertexIds.includes(vertexId));
+
     // Remove UVs associated with this vertex
-    this.uvs = this.uvs.filter(uv => uv.vertexId !== vertexId);
+    this.uvs = this.uvs.filter((uv) => uv.vertexId !== vertexId);
   }
-  
+
   /**
    * Removes an edge and all associated faces
    * @param edgeId The ID of the edge to remove
    */
   removeEdge(edgeId: number): void {
     // Remove the edge
-    this.edges = this.edges.filter(e => e.id !== edgeId);
-    
+    this.edges = this.edges.filter((e) => e.id !== edgeId);
+
     // Remove faces that reference this edge
-    this.faces = this.faces.filter(f => !f.edgeIds.includes(edgeId));
+    this.faces = this.faces.filter((f) => !f.edgeIds.includes(edgeId));
   }
-  
+
   /**
    * Removes a face
    * @param faceId The ID of the face to remove
    */
   removeFace(faceId: number): void {
     // Remove the face
-    this.faces = this.faces.filter(f => f.id !== faceId);
+    this.faces = this.faces.filter((f) => f.id !== faceId);
   }
-  
+
   /**
    * Gets the number of vertices in the mesh
    * @returns The vertex count
@@ -128,7 +144,7 @@ export class EditableMesh implements IEditableMesh {
   getVertexCount(): number {
     return this.vertices.length;
   }
-  
+
   /**
    * Gets the number of edges in the mesh
    * @returns The edge count
@@ -136,7 +152,7 @@ export class EditableMesh implements IEditableMesh {
   getEdgeCount(): number {
     return this.edges.length;
   }
-  
+
   /**
    * Gets the number of faces in the mesh
    * @returns The face count
@@ -144,7 +160,7 @@ export class EditableMesh implements IEditableMesh {
   getFaceCount(): number {
     return this.faces.length;
   }
-  
+
   /**
    * Clears all mesh data
    */
@@ -166,7 +182,7 @@ export class EditableMesh implements IEditableMesh {
     if (!vertex) {
       throw new Error(`Vertex with ID ${vertexId} not found`);
     }
-    
+
     // Update the vertex position - all connected faces/edges will automatically use the new position
     vertex.position = newPosition;
   }
@@ -179,15 +195,18 @@ export class EditableMesh implements IEditableMesh {
    * @param threshold Maximum distance to consider (default: 0.5)
    * @returns The closest vertex ID or null if none found within threshold
    */
-  findClosestVertex(worldPoint: Vector3Like, threshold: number = 0.5): number | null {
+  findClosestVertex(
+    worldPoint: Vector3Like,
+    threshold: number = 0.5
+  ): number | null {
     let closestVertexId: number | null = null;
     let closestDistance = Infinity;
 
     for (const vertex of this.vertices) {
       const distance = Math.sqrt(
         Math.pow(vertex.position.x - worldPoint.x, 2) +
-        Math.pow(vertex.position.y - worldPoint.y, 2) +
-        Math.pow(vertex.position.z - worldPoint.z, 2)
+          Math.pow(vertex.position.y - worldPoint.y, 2) +
+          Math.pow(vertex.position.z - worldPoint.z, 2)
       );
 
       if (distance < closestDistance && distance < threshold) {
@@ -205,7 +224,10 @@ export class EditableMesh implements IEditableMesh {
    * @param threshold Maximum distance to consider (default: 0.5)
    * @returns The closest edge ID or null if none found within threshold
    */
-  findClosestEdge(worldPoint: Vector3Like, threshold: number = 0.5): number | null {
+  findClosestEdge(
+    worldPoint: Vector3Like,
+    threshold: number = 0.5
+  ): number | null {
     let closestEdgeId: number | null = null;
     let closestDistance = Infinity;
 
@@ -214,8 +236,12 @@ export class EditableMesh implements IEditableMesh {
       const vertex2 = this.getVertex(edge.vertexIds[1]);
 
       if (vertex1 && vertex2) {
-        const distance = this.distanceToLineSegment(worldPoint, vertex1.position, vertex2.position);
-        
+        const distance = this.distanceToLineSegment(
+          worldPoint,
+          vertex1.position,
+          vertex2.position
+        );
+
         if (distance < closestDistance && distance < threshold) {
           closestDistance = distance;
           closestEdgeId = edge.id;
@@ -235,17 +261,17 @@ export class EditableMesh implements IEditableMesh {
    * @returns The face ID or null if not found
    */
   findFaceFromTriangle(
-    triangleIndex: number, 
-    faceNormal: Vector3Like, 
+    _triangleIndex: number,
+    _faceNormal: Vector3Like,
     intersectionPoint: Vector3Like,
-    cameraDirection?: Vector3Like
+    _cameraDirection?: Vector3Like
   ): number | null {
     // For now, return the first face that contains the triangle
     // In a more sophisticated implementation, this would map triangle indices to face IDs
     // and consider face orientation
-    
+
     if (this.faces.length === 0) return null;
-    
+
     // Simple fallback: find the face closest to the intersection point
     return this.findClosestFace(intersectionPoint);
   }
@@ -263,11 +289,13 @@ export class EditableMesh implements IEditableMesh {
 
     for (const face of this.faces) {
       // Calculate face center
-      const faceVertices = face.vertexIds.map(id => this.getVertex(id)).filter(v => v !== undefined);
+      const faceVertices = face.vertexIds
+        .map((id) => this.getVertex(id))
+        .filter((v) => v !== undefined);
       if (faceVertices.length === 0) continue;
 
       const center = { x: 0, y: 0, z: 0 };
-      faceVertices.forEach(vertex => {
+      faceVertices.forEach((vertex) => {
         center.x += vertex!.position.x;
         center.y += vertex!.position.y;
         center.z += vertex!.position.z;
@@ -278,8 +306,8 @@ export class EditableMesh implements IEditableMesh {
 
       const distance = Math.sqrt(
         Math.pow(center.x - worldPoint.x, 2) +
-        Math.pow(center.y - worldPoint.y, 2) +
-        Math.pow(center.z - worldPoint.z, 2)
+          Math.pow(center.y - worldPoint.y, 2) +
+          Math.pow(center.z - worldPoint.z, 2)
       );
 
       if (distance < closestDistance) {
@@ -298,7 +326,11 @@ export class EditableMesh implements IEditableMesh {
    * @param lineEnd The end of the line segment
    * @returns The shortest distance from the point to the line segment
    */
-  private distanceToLineSegment(point: Vector3Like, lineStart: Vector3Like, lineEnd: Vector3Like): number {
+  private distanceToLineSegment(
+    point: Vector3Like,
+    lineStart: Vector3Like,
+    lineEnd: Vector3Like
+  ): number {
     const A = point.x - lineStart.x;
     const B = point.y - lineStart.y;
     const C = point.z - lineStart.z;
@@ -347,7 +379,7 @@ export class EditableMesh implements IEditableMesh {
    */
   getConnectedVertices(vertexId: number): number[] {
     const connected: number[] = [];
-    
+
     for (const edge of this.edges) {
       if (edge.vertexIds[0] === vertexId) {
         connected.push(edge.vertexIds[1]);
@@ -355,7 +387,7 @@ export class EditableMesh implements IEditableMesh {
         connected.push(edge.vertexIds[0]);
       }
     }
-    
+
     return connected;
   }
 
@@ -366,8 +398,8 @@ export class EditableMesh implements IEditableMesh {
    */
   getFacesContainingVertex(vertexId: number): number[] {
     return this.faces
-      .filter(face => face.vertexIds.includes(vertexId))
-      .map(face => face.id);
+      .filter((face) => face.vertexIds.includes(vertexId))
+      .map((face) => face.id);
   }
 
   /**
@@ -377,8 +409,8 @@ export class EditableMesh implements IEditableMesh {
    */
   getEdgesContainingVertex(vertexId: number): number[] {
     return this.edges
-      .filter(edge => edge.vertexIds.includes(vertexId))
-      .map(edge => edge.id);
+      .filter((edge) => edge.vertexIds.includes(vertexId))
+      .map((edge) => edge.id);
   }
 
   /**
@@ -391,17 +423,19 @@ export class EditableMesh implements IEditableMesh {
     if (!face) return [];
 
     const adjacent: number[] = [];
-    
+
     for (const otherFace of this.faces) {
       if (otherFace.id === faceId) continue;
-      
+
       // Check if faces share any edges
-      const sharedVertices = face.vertexIds.filter(id => otherFace.vertexIds.includes(id));
+      const sharedVertices = face.vertexIds.filter((id) =>
+        otherFace.vertexIds.includes(id)
+      );
       if (sharedVertices.length >= 2) {
         adjacent.push(otherFace.id);
       }
     }
-    
+
     return adjacent;
   }
 
@@ -429,7 +463,7 @@ export class EditableMesh implements IEditableMesh {
     for (const edge of this.edges) {
       const vertex1 = this.getVertex(edge.vertexIds[0]);
       const vertex2 = this.getVertex(edge.vertexIds[1]);
-      
+
       if (!vertex1 || !vertex2) {
         errors.push(`Edge ${edge.id} references non-existent vertices`);
       }
@@ -440,7 +474,9 @@ export class EditableMesh implements IEditableMesh {
       for (const vertexId of face.vertexIds) {
         const vertex = this.getVertex(vertexId);
         if (!vertex) {
-          errors.push(`Face ${face.id} references non-existent vertex ${vertexId}`);
+          errors.push(
+            `Face ${face.id} references non-existent vertex ${vertexId}`
+          );
         }
       }
     }
@@ -448,7 +484,7 @@ export class EditableMesh implements IEditableMesh {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -458,7 +494,7 @@ export class EditableMesh implements IEditableMesh {
    * @returns Array of faces that reference this vertex
    */
   getFacesUsingVertex(vertexId: number): Face[] {
-    return this.faces.filter(face => face.vertexIds.includes(vertexId));
+    return this.faces.filter((face) => face.vertexIds.includes(vertexId));
   }
 
   /**
@@ -467,7 +503,7 @@ export class EditableMesh implements IEditableMesh {
    * @returns Array of edges that reference this vertex
    */
   getEdgesUsingVertex(vertexId: number): Edge[] {
-    return this.edges.filter(edge => edge.vertexIds.includes(vertexId));
+    return this.edges.filter((edge) => edge.vertexIds.includes(vertexId));
   }
 
   /**
@@ -476,33 +512,33 @@ export class EditableMesh implements IEditableMesh {
    */
   toBufferGeometry(): THREE.BufferGeometry {
     const geometry = new THREE.BufferGeometry();
-    
+
     if (this.vertices.length === 0 || this.faces.length === 0) {
       console.warn('EditableMesh has no vertices or faces');
       return geometry;
     }
-    
+
     // Create position array from vertices
     const positions: number[] = [];
     const indices: number[] = [];
-    
+
     // Create a map from vertex ID to index for face construction
     const vertexIdToIndex = new Map<number, number>();
     let currentIndex = 0;
-    
+
     // Add all vertices to positions array
-    this.vertices.forEach(vertex => {
+    this.vertices.forEach((vertex) => {
       positions.push(vertex.position.x, vertex.position.y, vertex.position.z);
       vertexIdToIndex.set(vertex.id, currentIndex++);
     });
-    
+
     // Add face indices with minimal triangulation
-    this.faces.forEach(face => {
+    this.faces.forEach((face) => {
       const vertexCount = face.vertexIds.length;
-      
+
       if (vertexCount === 3) {
         // Triangle - add as is
-        face.vertexIds.forEach(vertexId => {
+        face.vertexIds.forEach((vertexId) => {
           const index = vertexIdToIndex.get(vertexId);
           if (index !== undefined) {
             indices.push(index);
@@ -510,7 +546,9 @@ export class EditableMesh implements IEditableMesh {
         });
       } else if (vertexCount === 4) {
         // Quad - triangulate into 2 triangles with proper winding
-        const indices4 = face.vertexIds.map(vertexId => vertexIdToIndex.get(vertexId)).filter((index): index is number => index !== undefined);
+        const indices4 = face.vertexIds
+          .map((vertexId) => vertexIdToIndex.get(vertexId))
+          .filter((index): index is number => index !== undefined);
         if (indices4.length === 4) {
           // First triangle: 0, 1, 2 (clockwise winding)
           indices.push(indices4[0]!, indices4[1]!, indices4[2]!);
@@ -519,7 +557,9 @@ export class EditableMesh implements IEditableMesh {
         }
       } else if (vertexCount > 4) {
         // N-gon - use fan triangulation with proper winding
-        const indicesN = face.vertexIds.map(vertexId => vertexIdToIndex.get(vertexId)).filter((index): index is number => index !== undefined);
+        const indicesN = face.vertexIds
+          .map((vertexId) => vertexIdToIndex.get(vertexId))
+          .filter((index): index is number => index !== undefined);
         if (indicesN.length >= 3) {
           const centerIndex = indicesN[0]!;
           for (let i = 1; i < indicesN.length - 1; i++) {
@@ -529,21 +569,24 @@ export class EditableMesh implements IEditableMesh {
         }
       }
     });
-    
+
     if (positions.length === 0) {
       console.warn('No positions generated for geometry');
       return geometry;
     }
-    
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    
+
+    geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(positions, 3)
+    );
+
     if (indices.length > 0) {
       geometry.setIndex(indices);
     }
-    
+
     // Compute normals after setting indices
     geometry.computeVertexNormals();
-    
+
     return geometry;
   }
 
@@ -553,31 +596,31 @@ export class EditableMesh implements IEditableMesh {
    */
   toFaceGeometry(): THREE.BufferGeometry {
     const geometry = new THREE.BufferGeometry();
-    
+
     if (this.vertices.length === 0 || this.faces.length === 0) {
       return geometry;
     }
-    
+
     const positions: number[] = [];
     const indices: number[] = [];
     let currentIndex = 0;
-    
+
     // Create a map from vertex ID to index
     const vertexIdToIndex = new Map<number, number>();
-    
+
     // Add all vertices to positions array
-    this.vertices.forEach(vertex => {
+    this.vertices.forEach((vertex) => {
       positions.push(vertex.position.x, vertex.position.y, vertex.position.z);
       vertexIdToIndex.set(vertex.id, currentIndex++);
     });
-    
+
     // Create separate triangles for each face to avoid triangulation artifacts
-    this.faces.forEach(face => {
+    this.faces.forEach((face) => {
       const vertexCount = face.vertexIds.length;
-      
+
       if (vertexCount === 3) {
         // Triangle - add as is
-        face.vertexIds.forEach(vertexId => {
+        face.vertexIds.forEach((vertexId) => {
           const index = vertexIdToIndex.get(vertexId);
           if (index !== undefined) {
             indices.push(index);
@@ -585,7 +628,9 @@ export class EditableMesh implements IEditableMesh {
         });
       } else if (vertexCount === 4) {
         // Quad - create as separate triangles but with better structure
-        const indices4 = face.vertexIds.map(vertexId => vertexIdToIndex.get(vertexId)).filter((index): index is number => index !== undefined);
+        const indices4 = face.vertexIds
+          .map((vertexId) => vertexIdToIndex.get(vertexId))
+          .filter((index): index is number => index !== undefined);
         if (indices4.length === 4) {
           // Create two triangles that form a proper quad
           indices.push(indices4[0]!, indices4[1]!, indices4[2]!);
@@ -593,7 +638,9 @@ export class EditableMesh implements IEditableMesh {
         }
       } else if (vertexCount > 4) {
         // N-gon - use fan triangulation
-        const indicesN = face.vertexIds.map(vertexId => vertexIdToIndex.get(vertexId)).filter((index): index is number => index !== undefined);
+        const indicesN = face.vertexIds
+          .map((vertexId) => vertexIdToIndex.get(vertexId))
+          .filter((index): index is number => index !== undefined);
         if (indicesN.length >= 3) {
           const centerIndex = indicesN[0]!;
           for (let i = 1; i < indicesN.length - 1; i++) {
@@ -602,15 +649,18 @@ export class EditableMesh implements IEditableMesh {
         }
       }
     });
-    
+
     if (positions.length > 0) {
-      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute(positions, 3)
+      );
       if (indices.length > 0) {
         geometry.setIndex(indices);
       }
       geometry.computeVertexNormals();
     }
-    
+
     return geometry;
   }
 }

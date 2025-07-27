@@ -37,13 +37,13 @@ export class SelectionManager {
     this.state = {
       selectedVertices: new Set(),
       selectedEdges: new Set(),
-      selectedFaces: new Set()
+      selectedFaces: new Set(),
     };
     this.options = {
       threshold: options.threshold ?? 0.5,
       multiSelect: options.multiSelect ?? true,
       clearOnSelect: options.clearOnSelect ?? false,
-      toggleOnReclick: options.toggleOnReclick ?? true
+      toggleOnReclick: options.toggleOnReclick ?? true,
     };
   }
 
@@ -54,7 +54,7 @@ export class SelectionManager {
     return {
       selectedVertices: new Set(this.state.selectedVertices),
       selectedEdges: new Set(this.state.selectedEdges),
-      selectedFaces: new Set(this.state.selectedFaces)
+      selectedFaces: new Set(this.state.selectedFaces),
     };
   }
 
@@ -79,7 +79,10 @@ export class SelectionManager {
       this.clearSelection();
     }
 
-    if (this.options.toggleOnReclick && this.state.selectedVertices.has(vertexId)) {
+    if (
+      this.options.toggleOnReclick &&
+      this.state.selectedVertices.has(vertexId)
+    ) {
       this.state.selectedVertices.delete(vertexId);
       return true;
     }
@@ -152,7 +155,10 @@ export class SelectionManager {
    * Selects the closest vertex to a world point
    */
   selectVertexAtPoint(worldPoint: Vector3Like): number | null {
-    const vertexId = this.mesh.findClosestVertex(worldPoint, this.options.threshold);
+    const vertexId = this.mesh.findClosestVertex(
+      worldPoint,
+      this.options.threshold
+    );
     if (vertexId !== null) {
       this.selectVertex(vertexId);
       return vertexId;
@@ -164,7 +170,10 @@ export class SelectionManager {
    * Selects the closest edge to a world point
    */
   selectEdgeAtPoint(worldPoint: Vector3Like): number | null {
-    const edgeId = this.mesh.findClosestEdge(worldPoint, this.options.threshold);
+    const edgeId = this.mesh.findClosestEdge(
+      worldPoint,
+      this.options.threshold
+    );
     if (edgeId !== null) {
       this.selectEdge(edgeId);
       return edgeId;
@@ -221,12 +230,12 @@ export class SelectionManager {
    */
   selectConnectedVertices(): void {
     const newVertices = new Set<number>();
-    
+
     for (const vertexId of this.state.selectedVertices) {
       const connected = this.mesh.getConnectedVertices(vertexId);
-      connected.forEach(id => newVertices.add(id));
+      connected.forEach((id) => newVertices.add(id));
     }
-    
+
     this.state.selectedVertices = newVertices;
   }
 
@@ -235,12 +244,12 @@ export class SelectionManager {
    */
   selectFacesWithSelectedVertices(): void {
     const newFaces = new Set<number>();
-    
+
     for (const vertexId of this.state.selectedVertices) {
       const faces = this.mesh.getFacesContainingVertex(vertexId);
-      faces.forEach(id => newFaces.add(id));
+      faces.forEach((id) => newFaces.add(id));
     }
-    
+
     this.state.selectedFaces = newFaces;
   }
 
@@ -249,12 +258,12 @@ export class SelectionManager {
    */
   selectEdgesWithSelectedVertices(): void {
     const newEdges = new Set<number>();
-    
+
     for (const vertexId of this.state.selectedVertices) {
       const edges = this.mesh.getEdgesContainingVertex(vertexId);
-      edges.forEach(id => newEdges.add(id));
+      edges.forEach((id) => newEdges.add(id));
     }
-    
+
     this.state.selectedEdges = newEdges;
   }
 
@@ -263,14 +272,14 @@ export class SelectionManager {
    */
   selectVerticesInSelectedFaces(): void {
     const newVertices = new Set<number>();
-    
+
     for (const faceId of this.state.selectedFaces) {
       const face = this.mesh.getFace(faceId);
       if (face) {
-        face.vertexIds.forEach(id => newVertices.add(id));
+        face.vertexIds.forEach((id) => newVertices.add(id));
       }
     }
-    
+
     this.state.selectedVertices = newVertices;
   }
 
@@ -279,14 +288,14 @@ export class SelectionManager {
    */
   selectVerticesInSelectedEdges(): void {
     const newVertices = new Set<number>();
-    
+
     for (const edgeId of this.state.selectedEdges) {
       const edge = this.mesh.getEdge(edgeId);
       if (edge) {
-        edge.vertexIds.forEach(id => newVertices.add(id));
+        edge.vertexIds.forEach((id) => newVertices.add(id));
       }
     }
-    
+
     this.state.selectedVertices = newVertices;
   }
 
@@ -303,7 +312,10 @@ export class SelectionManager {
       vertexCount: this.state.selectedVertices.size,
       edgeCount: this.state.selectedEdges.size,
       faceCount: this.state.selectedFaces.size,
-      totalCount: this.state.selectedVertices.size + this.state.selectedEdges.size + this.state.selectedFaces.size
+      totalCount:
+        this.state.selectedVertices.size +
+        this.state.selectedEdges.size +
+        this.state.selectedFaces.size,
     };
   }
 
@@ -320,4 +332,4 @@ export class SelectionManager {
   getOptions(): Required<SelectionOptions> {
     return { ...this.options };
   }
-} 
+}

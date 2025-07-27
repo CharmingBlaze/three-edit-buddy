@@ -2,7 +2,12 @@
 export { extrudeFaces } from './extrudeFaces.js';
 export { subdivideEdge, subdivideEdges } from './subdivideEdge.js';
 export { mergeVertices, mergeSpecificVertices } from './mergeVertices.js';
-export { deleteElements, deleteVertices, deleteEdges, deleteFaces } from './deleteElements.js';
+export {
+  deleteElements,
+  deleteVertices,
+  deleteEdges,
+  deleteFaces,
+} from './deleteElements.js';
 export { bevelEdge } from './bevelEdge.js';
 export { insetFaces } from './insetFaces.js';
 export { triangulateFaces, triangulateMesh } from './triangulateFaces.js';

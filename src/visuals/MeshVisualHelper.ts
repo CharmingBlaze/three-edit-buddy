@@ -1,7 +1,6 @@
 import * as THREE from 'three';
-import type { Vector3Like } from '../types/index.js';
 import { EditableMesh } from '../core/EditableMesh.js';
-import { SelectionManager, SelectionState } from '../selection/SelectionManager.js';
+import { SelectionManager } from '../selection/SelectionManager.js';
 
 /**
  * Options for vertex visualization
@@ -80,23 +79,27 @@ export class MeshVisualHelper {
   private mesh: EditableMesh;
   private selectionManager: SelectionManager;
   private options: Required<MeshVisualOptions>;
-  
+
   // Visual objects
   private vertexObjects: THREE.Mesh[] = [];
   private edgeObjects: THREE.Line[] = [];
   private faceObjects: THREE.Mesh[] = [];
   private selectionObjects: THREE.Object3D[] = [];
-  
+
   // Groups for organization
   private vertexGroup: THREE.Group;
   private edgeGroup: THREE.Group;
   private faceGroup: THREE.Group;
   private selectionGroup: THREE.Group;
 
-  constructor(mesh: EditableMesh, selectionManager: SelectionManager, options: MeshVisualOptions = {}) {
+  constructor(
+    mesh: EditableMesh,
+    selectionManager: SelectionManager,
+    options: MeshVisualOptions = {}
+  ) {
     this.mesh = mesh;
     this.selectionManager = selectionManager;
-    
+
     // Set default options
     this.options = {
       vertices: {
@@ -104,21 +107,21 @@ export class MeshVisualHelper {
         size: 0.1,
         visible: true,
         shape: 'cube',
-        ...options.vertices
+        ...options.vertices,
       },
       edges: {
         color: 0xff0000,
         width: 2,
         visible: true,
         opacity: 1.0,
-        ...options.edges
+        ...options.edges,
       },
       faces: {
         color: 0x00ff00,
         opacity: 0.3,
         visible: true,
         flatShading: false,
-        ...options.faces
+        ...options.faces,
       },
       selection: {
         selectedVertexColor: 0xff6600,
@@ -127,20 +130,20 @@ export class MeshVisualHelper {
         selectedVertexSize: 0.15,
         selectedEdgeWidth: 8,
         selectedFaceOpacity: 0.6,
-        ...options.selection
-      }
+        ...options.selection,
+      },
     };
 
     // Create groups
     this.vertexGroup = new THREE.Group();
     this.vertexGroup.name = 'VertexVisuals';
-    
+
     this.edgeGroup = new THREE.Group();
     this.edgeGroup.name = 'EdgeVisuals';
-    
+
     this.faceGroup = new THREE.Group();
     this.faceGroup.name = 'FaceVisuals';
-    
+
     this.selectionGroup = new THREE.Group();
     this.selectionGroup.name = 'SelectionVisuals';
 
@@ -168,22 +171,31 @@ export class MeshVisualHelper {
     if (!this.options.vertices.visible) return;
 
     // Create geometry based on shape preference
-    const geometry = this.options.vertices.shape === 'sphere' 
-      ? new THREE.SphereGeometry(this.options.vertices.size, 8, 6)
-      : new THREE.BoxGeometry(this.options.vertices.size, this.options.vertices.size, this.options.vertices.size);
+    const geometry =
+      this.options.vertices.shape === 'sphere'
+        ? new THREE.SphereGeometry(this.options.vertices.size, 8, 6)
+        : new THREE.BoxGeometry(
+            this.options.vertices.size,
+            this.options.vertices.size,
+            this.options.vertices.size
+          );
 
     const material = new THREE.MeshBasicMaterial({
       color: this.options.vertices.color,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.8,
     });
 
     // Create vertex markers
     for (const vertex of this.mesh.vertices) {
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(vertex.position.x, vertex.position.y, vertex.position.z);
+      mesh.position.set(
+        vertex.position.x,
+        vertex.position.y,
+        vertex.position.z
+      );
       mesh.userData = { vertexId: vertex.id, type: 'vertex' };
-      
+
       this.vertexGroup.add(mesh);
       this.vertexObjects.push(mesh);
     }
@@ -203,7 +215,7 @@ export class MeshVisualHelper {
       color: this.options.edges.color,
       linewidth: this.options.edges.width,
       transparent: true,
-      opacity: this.options.edges.opacity
+      opacity: this.options.edges.opacity,
     });
 
     // Create edge lines
@@ -214,14 +226,21 @@ export class MeshVisualHelper {
       if (vertex1 && vertex2) {
         const geometry = new THREE.BufferGeometry();
         const positions = [
-          vertex1.position.x, vertex1.position.y, vertex1.position.z,
-          vertex2.position.x, vertex2.position.y, vertex2.position.z
+          vertex1.position.x,
+          vertex1.position.y,
+          vertex1.position.z,
+          vertex2.position.x,
+          vertex2.position.y,
+          vertex2.position.z,
         ];
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute(
+          'position',
+          new THREE.Float32BufferAttribute(positions, 3)
+        );
 
         const line = new THREE.Line(geometry, material);
         line.userData = { edgeId: edge.id, type: 'edge' };
-        
+
         this.edgeGroup.add(line);
         this.edgeObjects.push(line);
       }
@@ -244,12 +263,18 @@ export class MeshVisualHelper {
     let indexOffset = 0;
 
     for (const face of this.mesh.faces) {
-      const faceVertices = face.vertexIds.map(id => this.mesh.getVertex(id)).filter(v => v !== undefined);
+      const faceVertices = face.vertexIds
+        .map((id) => this.mesh.getVertex(id))
+        .filter((v) => v !== undefined);
       if (faceVertices.length < 3) continue;
 
       // Add vertex positions
       for (const vertex of faceVertices) {
-        positions.push(vertex!.position.x, vertex!.position.y, vertex!.position.z);
+        positions.push(
+          vertex!.position.x,
+          vertex!.position.y,
+          vertex!.position.z
+        );
       }
 
       // Create indices for triangulation
@@ -271,7 +296,10 @@ export class MeshVisualHelper {
 
     if (positions.length > 0) {
       const geometry = new THREE.BufferGeometry();
-      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute(positions, 3)
+      );
       geometry.setIndex(indices);
       geometry.computeVertexNormals();
 
@@ -279,12 +307,12 @@ export class MeshVisualHelper {
         color: this.options.faces.color,
         transparent: true,
         opacity: this.options.faces.opacity,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       });
 
       const mesh = new THREE.Mesh(geometry, material);
       mesh.userData = { type: 'face-highlight' };
-      
+
       this.faceGroup.add(mesh);
       this.faceObjects.push(mesh);
     }
@@ -302,10 +330,10 @@ export class MeshVisualHelper {
 
     // Highlight selected vertices
     this.createSelectedVertexHighlights(selection.selectedVertices);
-    
+
     // Highlight selected edges
     this.createSelectedEdgeHighlights(selection.selectedEdges);
-    
+
     // Highlight selected faces
     this.createSelectedFaceHighlights(selection.selectedFaces);
   }
@@ -316,20 +344,28 @@ export class MeshVisualHelper {
   private createSelectedVertexHighlights(selectedVertices: Set<number>): void {
     if (selectedVertices.size === 0) return;
 
-    const geometry = new THREE.SphereGeometry(this.options.selection.selectedVertexSize, 8, 6);
+    const geometry = new THREE.SphereGeometry(
+      this.options.selection.selectedVertexSize,
+      8,
+      6
+    );
     const material = new THREE.MeshBasicMaterial({
       color: this.options.selection.selectedVertexColor,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.8,
     });
 
     for (const vertexId of selectedVertices) {
       const vertex = this.mesh.getVertex(vertexId);
       if (vertex) {
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(vertex.position.x, vertex.position.y, vertex.position.z);
+        mesh.position.set(
+          vertex.position.x,
+          vertex.position.y,
+          vertex.position.z
+        );
         mesh.userData = { vertexId, type: 'selected-vertex' };
-        
+
         this.selectionGroup.add(mesh);
         this.selectionObjects.push(mesh);
       }
@@ -346,7 +382,7 @@ export class MeshVisualHelper {
       color: this.options.selection.selectedEdgeColor,
       linewidth: this.options.selection.selectedEdgeWidth,
       transparent: true,
-      opacity: 1.0
+      opacity: 1.0,
     });
 
     for (const edgeId of selectedEdges) {
@@ -359,21 +395,30 @@ export class MeshVisualHelper {
           // Create a thick line using multiple segments
           const segments = 10;
           const points = [];
-          
+
           for (let i = 0; i <= segments; i++) {
             const t = i / segments;
-            const x = vertex1.position.x + (vertex2.position.x - vertex1.position.x) * t;
-            const y = vertex1.position.y + (vertex2.position.y - vertex1.position.y) * t;
-            const z = vertex1.position.z + (vertex2.position.z - vertex1.position.z) * t;
+            const x =
+              vertex1.position.x +
+              (vertex2.position.x - vertex1.position.x) * t;
+            const y =
+              vertex1.position.y +
+              (vertex2.position.y - vertex1.position.y) * t;
+            const z =
+              vertex1.position.z +
+              (vertex2.position.z - vertex1.position.z) * t;
             points.push(x, y, z);
           }
 
           const geometry = new THREE.BufferGeometry();
-          geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+          geometry.setAttribute(
+            'position',
+            new THREE.Float32BufferAttribute(points, 3)
+          );
 
           const line = new THREE.Line(geometry, material);
           line.userData = { edgeId, type: 'selected-edge' };
-          
+
           this.selectionGroup.add(line);
           this.selectionObjects.push(line);
 
@@ -382,16 +427,24 @@ export class MeshVisualHelper {
           const sphereMaterial = new THREE.MeshBasicMaterial({
             color: this.options.selection.selectedEdgeColor,
             transparent: true,
-            opacity: 0.8
+            opacity: 0.8,
           });
 
           const sphere1 = new THREE.Mesh(sphereGeometry, sphereMaterial);
-          sphere1.position.set(vertex1.position.x, vertex1.position.y, vertex1.position.z);
+          sphere1.position.set(
+            vertex1.position.x,
+            vertex1.position.y,
+            vertex1.position.z
+          );
           this.selectionGroup.add(sphere1);
           this.selectionObjects.push(sphere1);
 
           const sphere2 = new THREE.Mesh(sphereGeometry, sphereMaterial);
-          sphere2.position.set(vertex2.position.x, vertex2.position.y, vertex2.position.z);
+          sphere2.position.set(
+            vertex2.position.x,
+            vertex2.position.y,
+            vertex2.position.z
+          );
           this.selectionGroup.add(sphere2);
           this.selectionObjects.push(sphere2);
         }
@@ -408,7 +461,9 @@ export class MeshVisualHelper {
     for (const faceId of selectedFaces) {
       const face = this.mesh.getFace(faceId);
       if (face) {
-        const faceVertices = face.vertexIds.map(id => this.mesh.getVertex(id)).filter(v => v !== undefined);
+        const faceVertices = face.vertexIds
+          .map((id) => this.mesh.getVertex(id))
+          .filter((v) => v !== undefined);
         if (faceVertices.length < 3) continue;
 
         const positions: number[] = [];
@@ -416,7 +471,11 @@ export class MeshVisualHelper {
 
         // Add vertex positions
         for (const vertex of faceVertices) {
-          positions.push(vertex!.position.x, vertex!.position.y, vertex!.position.z);
+          positions.push(
+            vertex!.position.x,
+            vertex!.position.y,
+            vertex!.position.z
+          );
         }
 
         // Create indices for triangulation
@@ -431,7 +490,10 @@ export class MeshVisualHelper {
         }
 
         const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute(
+          'position',
+          new THREE.Float32BufferAttribute(positions, 3)
+        );
         geometry.setIndex(indices);
         geometry.computeVertexNormals();
 
@@ -439,12 +501,12 @@ export class MeshVisualHelper {
           color: this.options.selection.selectedFaceColor,
           transparent: true,
           opacity: this.options.selection.selectedFaceOpacity,
-          side: THREE.DoubleSide
+          side: THREE.DoubleSide,
         });
 
         const mesh = new THREE.Mesh(geometry, material);
         mesh.userData = { faceId, type: 'selected-face' };
-        
+
         this.selectionGroup.add(mesh);
         this.selectionObjects.push(mesh);
       }
@@ -464,7 +526,7 @@ export class MeshVisualHelper {
       vertexGroup: this.vertexGroup,
       edgeGroup: this.edgeGroup,
       faceGroup: this.faceGroup,
-      selectionGroup: this.selectionGroup
+      selectionGroup: this.selectionGroup,
     };
   }
 
@@ -481,7 +543,7 @@ export class MeshVisualHelper {
       vertexObjects: this.vertexObjects,
       edgeObjects: this.edgeObjects,
       faceObjects: this.faceObjects,
-      selectionObjects: this.selectionObjects
+      selectionObjects: this.selectionObjects,
     };
   }
 
@@ -493,7 +555,7 @@ export class MeshVisualHelper {
       vertices: { ...this.options.vertices, ...options.vertices },
       edges: { ...this.options.edges, ...options.edges },
       faces: { ...this.options.faces, ...options.faces },
-      selection: { ...this.options.selection, ...options.selection }
+      selection: { ...this.options.selection, ...options.selection },
     };
     this.updateVisuals();
   }
@@ -508,7 +570,10 @@ export class MeshVisualHelper {
   /**
    * Shows or hides specific visual elements
    */
-  setVisibility(type: 'vertices' | 'edges' | 'faces' | 'selection', visible: boolean): void {
+  setVisibility(
+    type: 'vertices' | 'edges' | 'faces' | 'selection',
+    visible: boolean
+  ): void {
     switch (type) {
       case 'vertices':
         this.options.vertices.visible = visible;
@@ -533,28 +598,28 @@ export class MeshVisualHelper {
    */
   dispose(): void {
     // Dispose of geometries and materials
-    [...this.vertexObjects, ...this.faceObjects].forEach(obj => {
+    [...this.vertexObjects, ...this.faceObjects].forEach((obj) => {
       if (obj.geometry) obj.geometry.dispose();
       if (obj.material) {
         if (Array.isArray(obj.material)) {
-          obj.material.forEach(mat => mat.dispose());
+          obj.material.forEach((mat) => mat.dispose());
         } else {
           obj.material.dispose();
         }
       }
     });
 
-    this.edgeObjects.forEach(obj => {
+    this.edgeObjects.forEach((obj) => {
       if (obj.geometry) obj.geometry.dispose();
       if (obj.material) obj.material.dispose();
     });
 
-    this.selectionObjects.forEach(obj => {
+    this.selectionObjects.forEach((obj) => {
       if (obj instanceof THREE.Mesh) {
         if (obj.geometry) obj.geometry.dispose();
         if (obj.material) {
           if (Array.isArray(obj.material)) {
-            obj.material.forEach(mat => mat.dispose());
+            obj.material.forEach((mat) => mat.dispose());
           } else {
             obj.material.dispose();
           }
@@ -571,4 +636,4 @@ export class MeshVisualHelper {
     this.faceObjects = [];
     this.selectionObjects = [];
   }
-} 
+}

@@ -1,21 +1,28 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import type { 
-  ViewportPanelConfig, 
-  ViewportPanelState, 
+import type {
+  ViewportPanelConfig,
+  ViewportPanelState,
   CameraPreset,
   ViewportEvent,
-  ViewportEventListener 
+  ViewportEventListener,
 } from './ViewportState.js';
-import { createCameraFromPreset, updateCameraToPreset } from './CameraPresets.js';
-import { createGridOverlay, updateGridOverlay, createAxisHelper } from './ViewportGridOverlay.js';
+import {
+  createCameraFromPreset,
+  updateCameraToPreset,
+} from './CameraPresets.js';
+import {
+  createGridOverlay,
+  updateGridOverlay,
+  createAxisHelper,
+} from './ViewportGridOverlay.js';
 import { createViewportMenu } from './ViewportMenu.js';
 import { attachFullscreenToggle } from './FullscreenToggle.js';
 
 /**
  * Viewport panel event types
  */
-export type ViewportPanelEventType = 
+export type ViewportPanelEventType =
   | 'panel-created'
   | 'panel-destroyed'
   | 'preset-changed'
@@ -56,20 +63,38 @@ export function createViewportPanel(
   } = {}
 ): {
   state: ViewportPanelState;
-  addEventListener: (type: ViewportPanelEventType, listener: ViewportPanelEventListener) => void;
-  removeEventListener: (type: ViewportPanelEventType, listener: ViewportPanelEventListener) => void;
+  addEventListener: (
+    type: ViewportPanelEventType,
+    listener: ViewportPanelEventListener
+  ) => void;
+  removeEventListener: (
+    type: ViewportPanelEventType,
+    listener: ViewportPanelEventListener
+  ) => void;
   setPreset: (preset: CameraPreset) => void;
   resize: (width: number, height: number) => void;
   render: () => void;
   destroy: () => void;
 } {
-  const { id, initialPreset, showGrid = true, showAxis = true, cameraSettings } = config;
+  const {
+    id,
+    initialPreset,
+    showGrid = true,
+    showAxis = true,
+    cameraSettings,
+  } = config;
 
   // Event listeners storage
-  const eventListeners = new Map<ViewportPanelEventType, Set<ViewportPanelEventListener>>();
+  const eventListeners = new Map<
+    ViewportPanelEventType,
+    Set<ViewportPanelEventListener>
+  >();
 
   // Add event listener helper
-  function addEventListener(type: ViewportPanelEventType, listener: ViewportPanelEventListener): void {
+  function addEventListener(
+    type: ViewportPanelEventType,
+    listener: ViewportPanelEventListener
+  ): void {
     if (!eventListeners.has(type)) {
       eventListeners.set(type, new Set());
     }
@@ -77,7 +102,10 @@ export function createViewportPanel(
   }
 
   // Remove event listener helper
-  function removeEventListener(type: ViewportPanelEventType, listener: ViewportPanelEventListener): void {
+  function removeEventListener(
+    type: ViewportPanelEventType,
+    listener: ViewportPanelEventListener
+  ): void {
     const listeners = eventListeners.get(type);
     if (listeners) {
       listeners.delete(listener);
@@ -88,7 +116,7 @@ export function createViewportPanel(
   function emitEvent(event: ViewportPanelEvent): void {
     const listeners = eventListeners.get(event.type);
     if (listeners) {
-      listeners.forEach(listener => listener(event));
+      listeners.forEach((listener) => listener(event));
     }
   }
 
@@ -116,7 +144,7 @@ export function createViewportPanel(
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
-    alpha: true
+    alpha: true,
   });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(400, 300); // Initial size, will be updated
@@ -148,9 +176,18 @@ export function createViewportPanel(
 
   // Create menu
   const menu = createViewportMenu(id, {
-    presets: ['top', 'front', 'right', 'left', 'back', 'bottom', 'perspective', 'isometric'],
+    presets: [
+      'top',
+      'front',
+      'right',
+      'left',
+      'back',
+      'bottom',
+      'perspective',
+      'isometric',
+    ],
     position: 'top-left',
-    theme: 'dark'
+    theme: 'dark',
   });
   panelElement.appendChild(menu.element);
 
@@ -158,7 +195,7 @@ export function createViewportPanel(
   const fullscreenToggle = attachFullscreenToggle(panelElement, id, {
     position: 'top-right',
     theme: 'dark',
-    enableDoubleClick: true
+    enableDoubleClick: true,
   });
 
   // Create panel state
@@ -174,7 +211,7 @@ export function createViewportPanel(
     menuElement: menu.element,
     fullscreenToggle: fullscreenToggle.element,
     ...(gridOverlay && { gridOverlay }),
-    ...(axisHelper && { axisHelper })
+    ...(axisHelper && { axisHelper }),
   };
 
   // Set preset function
@@ -182,41 +219,41 @@ export function createViewportPanel(
     if (state.currentPreset === preset) return;
 
     state.currentPreset = preset;
-    
+
     // Update camera
     updateCameraToPreset(camera, preset, cameraSettings);
-    
+
     // Update grid overlay
     if (gridOverlay) {
       updateGridOverlay(gridOverlay, preset, gridSettings);
     }
-    
+
     // Update controls target
     controls.target.set(0, 0, 0);
     controls.update();
-    
+
     emitEvent({
       type: 'preset-changed',
       panelId: id,
-      preset
+      preset,
     });
   }
 
   // Resize function
   function resize(width: number, height: number): void {
     renderer.setSize(width, height);
-    
+
     // Update camera aspect ratio
     if (camera instanceof THREE.PerspectiveCamera) {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
     }
-    
+
     emitEvent({
       type: 'resized',
       panelId: id,
       width,
-      height
+      height,
     });
   }
 
@@ -224,10 +261,10 @@ export function createViewportPanel(
   function render(): void {
     renderer.render(scene, camera);
     controls.update();
-    
+
     emitEvent({
       type: 'rendered',
-      panelId: id
+      panelId: id,
     });
   }
 
@@ -258,30 +295,30 @@ export function createViewportPanel(
     if (axisHelper) {
       scene.remove(axisHelper);
     }
-    
+
     // Dispose renderer
     renderer.dispose();
-    
+
     // Destroy UI components
     menu.destroy();
     fullscreenToggle.destroy();
-    
+
     // Remove panel element
     panelElement.remove();
-    
+
     // Clear event listeners
     eventListeners.clear();
-    
+
     emitEvent({
       type: 'panel-destroyed',
-      panelId: id
+      panelId: id,
     });
   }
 
   // Emit created event
   emitEvent({
     type: 'panel-created',
-    panelId: id
+    panelId: id,
   });
 
   return {
@@ -291,6 +328,6 @@ export function createViewportPanel(
     setPreset,
     resize,
     render,
-    destroy
+    destroy,
   };
-} 
+}

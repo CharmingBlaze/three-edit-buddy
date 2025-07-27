@@ -42,8 +42,14 @@ export function createFullscreenToggle(
   config: FullscreenToggleConfig = {}
 ): {
   element: HTMLElement;
-  addEventListener: (type: FullscreenEventType, listener: FullscreenEventListener) => void;
-  removeEventListener: (type: FullscreenEventType, listener: FullscreenEventListener) => void;
+  addEventListener: (
+    type: FullscreenEventType,
+    listener: FullscreenEventListener
+  ) => void;
+  removeEventListener: (
+    type: FullscreenEventType,
+    listener: FullscreenEventListener
+  ) => void;
   setMaximized: (maximized: boolean) => void;
   destroy: () => void;
 } {
@@ -51,7 +57,7 @@ export function createFullscreenToggle(
     position = 'top-right',
     theme = 'dark',
     enableDoubleClick = true,
-    className = ''
+    className = '',
   } = config;
 
   // Create toggle container
@@ -104,10 +110,16 @@ export function createFullscreenToggle(
   `;
 
   // Event listeners storage
-  const eventListeners = new Map<FullscreenEventType, Set<FullscreenEventListener>>();
+  const eventListeners = new Map<
+    FullscreenEventType,
+    Set<FullscreenEventListener>
+  >();
 
   // Add event listener helper
-  function addEventListener(type: FullscreenEventType, listener: FullscreenEventListener): void {
+  function addEventListener(
+    type: FullscreenEventType,
+    listener: FullscreenEventListener
+  ): void {
     if (!eventListeners.has(type)) {
       eventListeners.set(type, new Set());
     }
@@ -115,7 +127,10 @@ export function createFullscreenToggle(
   }
 
   // Remove event listener helper
-  function removeEventListener(type: FullscreenEventType, listener: FullscreenEventListener): void {
+  function removeEventListener(
+    type: FullscreenEventType,
+    listener: FullscreenEventListener
+  ): void {
     const listeners = eventListeners.get(type);
     if (listeners) {
       listeners.delete(listener);
@@ -126,7 +141,7 @@ export function createFullscreenToggle(
   function emitEvent(event: FullscreenEvent): void {
     const listeners = eventListeners.get(event.type);
     if (listeners) {
-      listeners.forEach(listener => listener(event));
+      listeners.forEach((listener) => listener(event));
     }
   }
 
@@ -156,24 +171,24 @@ export function createFullscreenToggle(
   function toggle(): void {
     isMaximized = !isMaximized;
     updateButtonIcon();
-    
+
     emitEvent({
       type: 'toggle',
       panelId,
-      isMaximized
+      isMaximized,
     });
 
     if (isMaximized) {
       emitEvent({
         type: 'maximize',
         panelId,
-        isMaximized
+        isMaximized,
       });
     } else {
       emitEvent({
         type: 'restore',
         panelId,
-        isMaximized
+        isMaximized,
       });
     }
   }
@@ -202,15 +217,13 @@ export function createFullscreenToggle(
 
   // Add hover effects
   toggleButton.addEventListener('mouseenter', () => {
-    toggleButton.style.background = theme === 'dark' 
-      ? 'rgba(0, 0, 0, 0.8)' 
-      : 'rgba(255, 255, 255, 1)';
+    toggleButton.style.background =
+      theme === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 1)';
   });
 
   toggleButton.addEventListener('mouseleave', () => {
-    toggleButton.style.background = theme === 'dark' 
-      ? 'rgba(0, 0, 0, 0.7)' 
-      : 'rgba(255, 255, 255, 0.9)';
+    toggleButton.style.background =
+      theme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.9)';
   });
 
   // Assemble toggle
@@ -242,7 +255,7 @@ export function createFullscreenToggle(
     addEventListener,
     removeEventListener,
     setMaximized,
-    destroy
+    destroy,
   };
 }
 
@@ -259,14 +272,14 @@ export function attachFullscreenToggle(
   config: FullscreenToggleConfig = {}
 ): ReturnType<typeof createFullscreenToggle> {
   const toggle = createFullscreenToggle(panelId, config);
-  
+
   // Attach to panel
   panelElement.appendChild(toggle.element);
-  
+
   // Setup double-click if enabled
   if (config.enableDoubleClick && (toggle.element as any).setupDoubleClick) {
     (toggle.element as any).setupDoubleClick(panelElement);
   }
-  
+
   return toggle;
-} 
+}

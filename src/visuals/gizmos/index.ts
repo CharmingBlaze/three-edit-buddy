@@ -4,10 +4,7 @@
 
 import { GizmoTranslate, GizmoTranslateOptions } from './GizmoTranslate.js';
 
-export {
-  GizmoTranslate,
-  GizmoTranslateOptions
-};
+export { GizmoTranslate, GizmoTranslateOptions };
 
 // TODO: Implement these gizmos in the future
 // export * from './GizmoRotate.js';

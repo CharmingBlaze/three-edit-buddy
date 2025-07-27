@@ -1,11 +1,11 @@
 import * as THREE from 'three';
-import type { 
-  ViewportSystemConfig, 
-  ViewportSystemState, 
+import type {
+  ViewportSystemConfig,
+  ViewportSystemState,
   ViewportLayout,
   ViewportEvent,
   ViewportEventListener,
-  CameraPreset
+  CameraPreset,
 } from './ViewportState.js';
 import { createViewportPanel } from './ViewportPanel.js';
 
@@ -48,7 +48,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
     enableViewSwitching = true,
     autoRender = true,
     targetFPS = 60,
-    enableResize = true
+    enableResize = true,
   } = config;
 
   // Create system state
@@ -60,19 +60,22 @@ export function createViewportManager(config: ViewportManagerConfig): {
       panels: panelConfigs,
       gridSettings,
       enableFullscreen,
-      enableViewSwitching
+      enableViewSwitching,
     },
     panels: new Map(),
     maximizedPanelId: null,
     isInitialized: false,
-    animationFrameId: null
+    animationFrameId: null,
   };
 
   // Event listeners storage
   const eventListeners = new Map<string, Set<ViewportEventListener>>();
 
   // Add event listener helper
-  function addEventListener(type: string, listener: ViewportEventListener): void {
+  function addEventListener(
+    type: string,
+    listener: ViewportEventListener
+  ): void {
     if (!eventListeners.has(type)) {
       eventListeners.set(type, new Set());
     }
@@ -80,7 +83,10 @@ export function createViewportManager(config: ViewportManagerConfig): {
   }
 
   // Remove event listener helper
-  function removeEventListener(type: string, listener: ViewportEventListener): void {
+  function removeEventListener(
+    type: string,
+    listener: ViewportEventListener
+  ): void {
     const listeners = eventListeners.get(type);
     if (listeners) {
       listeners.delete(listener);
@@ -91,12 +97,15 @@ export function createViewportManager(config: ViewportManagerConfig): {
   function emitEvent(event: ViewportEvent): void {
     const listeners = eventListeners.get(event.type);
     if (listeners) {
-      listeners.forEach(listener => listener(event));
+      listeners.forEach((listener) => listener(event));
     }
   }
 
   // Create viewport panels
-  const viewportPanels = new Map<string, ReturnType<typeof createViewportPanel>>();
+  const viewportPanels = new Map<
+    string,
+    ReturnType<typeof createViewportPanel>
+  >();
 
   // Initialize function
   function init(): void {
@@ -113,31 +122,31 @@ export function createViewportManager(config: ViewportManagerConfig): {
     `;
 
     // Create panels
-    panelConfigs.forEach(panelConfig => {
+    panelConfigs.forEach((panelConfig) => {
       const panel = createViewportPanel(panelConfig, scene, gridSettings);
       viewportPanels.set(panelConfig.id, panel);
       state.panels.set(panelConfig.id, panel.state);
-      
+
       // Add panel event listeners
       panel.addEventListener('preset-changed', (event) => {
         emitEvent({
           type: 'preset-changed',
           panelId: event.panelId,
-          preset: event.preset
+          preset: event.preset,
         });
       });
 
       panel.addEventListener('panel-created', (event) => {
         emitEvent({
           type: 'panel-created',
-          panelId: event.panelId
+          panelId: event.panelId,
         });
       });
 
       panel.addEventListener('panel-destroyed', (event) => {
         emitEvent({
           type: 'panel-destroyed',
-          panelId: event.panelId
+          panelId: event.panelId,
         });
       });
     });
@@ -159,25 +168,25 @@ export function createViewportManager(config: ViewportManagerConfig): {
 
     emitEvent({
       type: 'layout-changed',
-      layout
+      layout,
     });
   }
 
   // Set layout function
   function setLayout(newLayout: ViewportLayout): void {
     state.config.layout = newLayout;
-    
+
     // Clear container
     container.innerHTML = '';
-    
+
     // Add panels based on layout
     const panelStates = Array.from(state.panels.values());
-    
+
     switch (newLayout) {
       case '2x2':
         container.style.flexDirection = 'row';
         container.style.flexWrap = 'wrap';
-        
+
         panelStates.forEach((panelState, index) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
@@ -192,7 +201,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
       case '1x1':
         container.style.flexDirection = 'row';
         container.style.flexWrap = 'nowrap';
-        
+
         // Show only the maximized panel
         if (state.maximizedPanelId) {
           const panelState = state.panels.get(state.maximizedPanelId);
@@ -209,7 +218,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
       case '1x2':
         container.style.flexDirection = 'row';
         container.style.flexWrap = 'nowrap';
-        
+
         panelStates.forEach((panelState, index) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
@@ -224,7 +233,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
       case '2x1':
         container.style.flexDirection = 'column';
         container.style.flexWrap = 'nowrap';
-        
+
         panelStates.forEach((panelState, index) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
@@ -239,7 +248,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
 
     emitEvent({
       type: 'layout-changed',
-      layout: newLayout
+      layout: newLayout,
     });
   }
 
@@ -261,10 +270,10 @@ export function createViewportManager(config: ViewportManagerConfig): {
       targetPanel.isMaximized = true;
       state.maximizedPanelId = panelId;
       setLayout('1x1');
-      
+
       emitEvent({
         type: 'maximized',
-        panelId
+        panelId,
       });
     }
   }
@@ -278,9 +287,9 @@ export function createViewportManager(config: ViewportManagerConfig): {
       }
       state.maximizedPanelId = null;
       setLayout('2x2');
-      
+
       emitEvent({
-        type: 'restored'
+        type: 'restored',
       });
     }
   }
@@ -288,10 +297,10 @@ export function createViewportManager(config: ViewportManagerConfig): {
   // Resize function
   function resize(): void {
     const panelStates = Array.from(state.panels.values());
-    
+
     switch (state.config.layout) {
       case '2x2':
-        panelStates.forEach(panelState => {
+        panelStates.forEach((panelState) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
             panel.resize(container.clientWidth / 2, container.clientHeight / 2);
@@ -309,7 +318,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
         break;
 
       case '1x2':
-        panelStates.forEach(panelState => {
+        panelStates.forEach((panelState) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
             panel.resize(container.clientWidth / 2, container.clientHeight);
@@ -318,7 +327,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
         break;
 
       case '2x1':
-        panelStates.forEach(panelState => {
+        panelStates.forEach((panelState) => {
           const panel = viewportPanels.get(panelState.id);
           if (panel) {
             panel.resize(container.clientWidth, container.clientHeight / 2);
@@ -330,7 +339,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
 
   // Render function
   function render(): void {
-    viewportPanels.forEach(panel => {
+    viewportPanels.forEach((panel) => {
       panel.render();
     });
   }
@@ -370,7 +379,7 @@ export function createViewportManager(config: ViewportManagerConfig): {
     }
 
     // Destroy all panels
-    viewportPanels.forEach(panel => {
+    viewportPanels.forEach((panel) => {
       panel.destroy();
     });
 
@@ -395,6 +404,6 @@ export function createViewportManager(config: ViewportManagerConfig): {
     addEventListener,
     removeEventListener,
     render,
-    resize
+    resize,
   };
-} 
+}

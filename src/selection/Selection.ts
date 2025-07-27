@@ -121,7 +121,11 @@ export class Selection {
   }
 
   getTotalSelectionCount(): number {
-    return this.selectedVertices.size + this.selectedEdges.size + this.selectedFaces.size;
+    return (
+      this.selectedVertices.size +
+      this.selectedEdges.size +
+      this.selectedFaces.size
+    );
   }
 
   getSelectedVertices(): number[] {
@@ -146,15 +150,17 @@ export class Selection {
   }
 
   isEmpty(): boolean {
-    return this.selectedVertices.size === 0 && 
-           this.selectedEdges.size === 0 && 
-           this.selectedFaces.size === 0;
+    return (
+      this.selectedVertices.size === 0 &&
+      this.selectedEdges.size === 0 &&
+      this.selectedFaces.size === 0
+    );
   }
 
   // Selection expansion
   expandToConnectedVertices(mesh: EditableMesh): void {
     const newVertices = new Set<number>();
-    
+
     for (const vertexId of this.selectedVertices) {
       const vertex = mesh.getVertex(vertexId);
       if (vertex) {
@@ -162,13 +168,16 @@ export class Selection {
         for (const edgeId of vertex.connectedEdges) {
           const edge = mesh.getEdge(edgeId);
           if (edge) {
-            const otherVertexId = edge.vertexIds[0] === vertexId ? edge.vertexIds[1] : edge.vertexIds[0];
+            const otherVertexId =
+              edge.vertexIds[0] === vertexId
+                ? edge.vertexIds[1]
+                : edge.vertexIds[0];
             newVertices.add(otherVertexId);
           }
         }
       }
     }
-    
+
     // Add new vertices to selection
     for (const vertexId of newVertices) {
       this.selectedVertices.add(vertexId);
@@ -177,7 +186,7 @@ export class Selection {
 
   expandToConnectedFaces(mesh: EditableMesh): void {
     const newFaces = new Set<number>();
-    
+
     for (const faceId of this.selectedFaces) {
       const face = mesh.getFace(faceId);
       if (face) {
@@ -194,7 +203,7 @@ export class Selection {
         }
       }
     }
-    
+
     // Add new faces to selection
     for (const faceId of newFaces) {
       this.selectedFaces.add(faceId);
@@ -223,4 +232,4 @@ export class Selection {
       }
     }
   }
-} 
+}

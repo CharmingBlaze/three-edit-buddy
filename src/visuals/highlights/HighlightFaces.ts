@@ -18,25 +18,28 @@ export interface HighlightFacesOptions {
  * @param options Configuration options
  * @returns A Three.js Object3D representing the face highlights
  */
-export function HighlightFaces(faceIds: number[], options: HighlightFacesOptions = {}): Object3D {
+export function HighlightFaces(
+  faceIds: number[],
+  options: HighlightFacesOptions = {}
+): Object3D {
   const {
     color = 0xff0000, // Red
     opacity = 0.5,
-    visible = true
+    visible = true,
   } = options;
-  
+
   // Create the highlights object
   const highlights = new Object3D();
-  
+
   // In a real implementation, this would create visual highlights
   // for each face in the faceIds array
-  
+
   // Apply options
   highlights.visible = visible;
-  
+
   // Store face IDs and options for later updates
   (highlights as any).faceIds = faceIds;
   (highlights as any).highlightOptions = { color, opacity };
-  
+
   return highlights;
 }

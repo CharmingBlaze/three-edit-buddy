@@ -27,20 +27,20 @@ export function UVGridHelper(options: UVGridHelperOptions = {}): Object3D {
     divisions = 10,
     color = 0x444444,
     opacity = 0.5,
-    visible = true
+    visible = true,
   } = options;
-  
+
   // Create the grid helper object
   const gridHelper = new Object3D();
-  
+
   // In a real implementation, this would create a visual grid
   // for UV coordinate visualization
-  
+
   // Apply options
   gridHelper.visible = visible;
-  
+
   // Store options for later updates
   (gridHelper as any).gridOptions = { size, divisions, color, opacity };
-  
+
   return gridHelper;
 }

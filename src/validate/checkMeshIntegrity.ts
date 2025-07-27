@@ -1,5 +1,10 @@
 import type { EditableMesh, ValidationResult } from '../types/index.js';
-import { getConnectedFaces, getConnectedEdges, isBoundaryEdge, isBoundaryVertex } from '../utils/topology.js';
+import {
+  getConnectedFaces,
+  getConnectedEdges,
+  isBoundaryEdge,
+  isBoundaryVertex,
+} from '../utils/topology.js';
 
 /**
  * Validates mesh topology and integrity
@@ -26,12 +31,16 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
   for (const edge of mesh.edges) {
     const v1 = mesh.getVertex(edge.vertexIds[0]);
     const v2 = mesh.getVertex(edge.vertexIds[1]);
-    
+
     if (!v1) {
-      errors.push(`Edge ${edge.id} references non-existent vertex ${edge.vertexIds[0]}`);
+      errors.push(
+        `Edge ${edge.id} references non-existent vertex ${edge.vertexIds[0]}`
+      );
     }
     if (!v2) {
-      errors.push(`Edge ${edge.id} references non-existent vertex ${edge.vertexIds[1]}`);
+      errors.push(
+        `Edge ${edge.id} references non-existent vertex ${edge.vertexIds[1]}`
+      );
     }
   }
 
@@ -50,7 +59,9 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
     for (const vertexId of face.vertexIds) {
       const vertex = mesh.getVertex(vertexId);
       if (!vertex) {
-        errors.push(`Face ${face.id} references non-existent vertex ${vertexId}`);
+        errors.push(
+          `Face ${face.id} references non-existent vertex ${vertexId}`
+        );
       }
     }
   }
@@ -58,14 +69,18 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
   // Check for degenerate faces (less than 3 vertices)
   for (const face of mesh.faces) {
     if (face.vertexIds.length < 3) {
-      errors.push(`Face ${face.id} has less than 3 vertices (${face.vertexIds.length})`);
+      errors.push(
+        `Face ${face.id} has less than 3 vertices (${face.vertexIds.length})`
+      );
     }
   }
 
   // Check for non-manifold edges
   for (const edge of mesh.edges) {
     if (edge.connectedFaces.length > 2) {
-      errors.push(`Non-manifold edge ${edge.id} is connected to ${edge.connectedFaces.length} faces`);
+      errors.push(
+        `Non-manifold edge ${edge.id} is connected to ${edge.connectedFaces.length} faces`
+      );
     }
   }
 
@@ -73,7 +88,7 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
   for (const vertex of mesh.vertices) {
     const connectedFaces = getConnectedFaces(mesh, vertex.id);
     const connectedEdges = getConnectedEdges(mesh, vertex.id);
-    
+
     if (connectedFaces.length === 0 && connectedEdges.length > 0) {
       warnings.push(`Vertex ${vertex.id} has edges but no faces`);
     }
@@ -82,7 +97,7 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -96,7 +111,9 @@ export function checkNonManifold(mesh: EditableMesh): ValidationResult {
   // Check for edges with more than 2 connected faces
   for (const edge of mesh.edges) {
     if (edge.connectedFaces.length > 2) {
-      errors.push(`Non-manifold edge ${edge.id} is connected to ${edge.connectedFaces.length} faces`);
+      errors.push(
+        `Non-manifold edge ${edge.id} is connected to ${edge.connectedFaces.length} faces`
+      );
     }
   }
 
@@ -104,17 +121,22 @@ export function checkNonManifold(mesh: EditableMesh): ValidationResult {
   for (const vertex of mesh.vertices) {
     const connectedFaces = getConnectedFaces(mesh, vertex.id);
     const connectedEdges = getConnectedEdges(mesh, vertex.id);
-    
+
     // Check for vertices that are not part of a proper manifold
-    if (connectedFaces.length > 0 && connectedEdges.length !== connectedFaces.length) {
-      warnings.push(`Vertex ${vertex.id} has inconsistent topology (${connectedEdges.length} edges, ${connectedFaces.length} faces)`);
+    if (
+      connectedFaces.length > 0 &&
+      connectedEdges.length !== connectedFaces.length
+    ) {
+      warnings.push(
+        `Vertex ${vertex.id} has inconsistent topology (${connectedEdges.length} edges, ${connectedFaces.length} faces)`
+      );
     }
   }
 
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -127,7 +149,7 @@ export function checkFaceWinding(mesh: EditableMesh): ValidationResult {
 
   // This is a basic check - in a full implementation, you'd want to check
   // that adjacent faces have consistent winding order
-  
+
   for (const face of mesh.faces) {
     if (face.vertexIds.length < 3) {
       errors.push(`Face ${face.id} has invalid winding (less than 3 vertices)`);
@@ -144,7 +166,7 @@ export function checkFaceWinding(mesh: EditableMesh): ValidationResult {
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -155,8 +177,12 @@ export function checkBoundary(mesh: EditableMesh): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  const boundaryEdges = mesh.edges.filter(edge => isBoundaryEdge(mesh, edge.id));
-  const boundaryVertices = mesh.vertices.filter(vertex => isBoundaryVertex(mesh, vertex.id));
+  const boundaryEdges = mesh.edges.filter((edge) =>
+    isBoundaryEdge(mesh, edge.id)
+  );
+  const boundaryVertices = mesh.vertices.filter((vertex) =>
+    isBoundaryVertex(mesh, vertex.id)
+  );
 
   // Check for open boundaries (this might be intentional)
   if (boundaryEdges.length > 0) {
@@ -166,8 +192,10 @@ export function checkBoundary(mesh: EditableMesh): ValidationResult {
   // Check for vertices that are only connected to boundary edges
   for (const vertex of boundaryVertices) {
     const connectedEdges = getConnectedEdges(mesh, vertex.id);
-    const allBoundary = connectedEdges.every(edge => isBoundaryEdge(mesh, edge.id));
-    
+    const allBoundary = connectedEdges.every((edge) =>
+      isBoundaryEdge(mesh, edge.id)
+    );
+
     if (allBoundary) {
       warnings.push(`Vertex ${vertex.id} is only connected to boundary edges`);
     }
@@ -176,7 +204,7 @@ export function checkBoundary(mesh: EditableMesh): ValidationResult {
   return {
     isValid: true, // Boundaries are not necessarily errors
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -193,19 +221,19 @@ export function validateMesh(mesh: EditableMesh): ValidationResult {
     ...topologyResult.errors,
     ...nonManifoldResult.errors,
     ...windingResult.errors,
-    ...boundaryResult.errors
+    ...boundaryResult.errors,
   ];
 
   const allWarnings = [
     ...topologyResult.warnings,
     ...nonManifoldResult.warnings,
     ...windingResult.warnings,
-    ...boundaryResult.warnings
+    ...boundaryResult.warnings,
   ];
 
   return {
     isValid: allErrors.length === 0,
     errors: allErrors,
-    warnings: allWarnings
+    warnings: allWarnings,
   };
-} 
+}

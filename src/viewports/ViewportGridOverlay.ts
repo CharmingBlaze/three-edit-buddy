@@ -29,7 +29,7 @@ export interface GridOverlayConfig {
  * @returns A Three.js Object3D containing the grid overlay
  */
 export function createGridOverlay(
-  preset: CameraPreset, 
+  preset: CameraPreset,
   config: GridOverlayConfig = {}
 ): THREE.Object3D {
   const {
@@ -39,19 +39,19 @@ export function createGridOverlay(
     centerColor = 0x444444,
     opacity = 0.5,
     showCenterLines = true,
-    showAxisLines = true
+    showAxisLines = true,
   } = config;
 
   const group = new THREE.Group();
   group.name = `GridOverlay_${preset}`;
 
   const gridPlane = getGridPlaneForPreset(preset);
-  
+
   // Create main grid
   const gridHelper = new THREE.GridHelper(size, divisions, color, color);
   gridHelper.material.transparent = true;
   gridHelper.material.opacity = opacity;
-  
+
   // Position grid based on plane
   switch (gridPlane) {
     case 'xy':
@@ -66,12 +66,17 @@ export function createGridOverlay(
       gridHelper.rotation.z = Math.PI / 2;
       break;
   }
-  
+
   group.add(gridHelper);
 
   // Add center lines if enabled
   if (showCenterLines) {
-    const centerLines = createCenterLines(size, centerColor, opacity, gridPlane);
+    const centerLines = createCenterLines(
+      size,
+      centerColor,
+      opacity,
+      gridPlane
+    );
     group.add(centerLines);
   }
 
@@ -93,9 +98,9 @@ export function createGridOverlay(
  * @returns Center lines object
  */
 function createCenterLines(
-  size: number, 
-  color: number, 
-  opacity: number, 
+  size: number,
+  color: number,
+  opacity: number,
   plane: 'xy' | 'xz' | 'yz'
 ): THREE.Object3D {
   const group = new THREE.Group();
@@ -105,7 +110,7 @@ function createCenterLines(
     color: color,
     transparent: true,
     opacity: opacity,
-    linewidth: 2
+    linewidth: 2,
   });
 
   const halfSize = size / 2;
@@ -115,19 +120,19 @@ function createCenterLines(
     case 'xy':
       // X center line
       const xLineGeometry = new THREE.BufferGeometry();
-      xLineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        -halfSize, 0, 0,
-        halfSize, 0, 0
-      ], 3));
+      xLineGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([-halfSize, 0, 0, halfSize, 0, 0], 3)
+      );
       const xLine = new THREE.Line(xLineGeometry, material);
       group.add(xLine);
 
       // Y center line
       const yLineGeometry = new THREE.BufferGeometry();
-      yLineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, -halfSize, 0,
-        0, halfSize, 0
-      ], 3));
+      yLineGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, -halfSize, 0, 0, halfSize, 0], 3)
+      );
       const yLine = new THREE.Line(yLineGeometry, material);
       group.add(yLine);
       break;
@@ -135,19 +140,19 @@ function createCenterLines(
     case 'xz':
       // X center line
       const xzXLineGeometry = new THREE.BufferGeometry();
-      xzXLineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        -halfSize, 0, 0,
-        halfSize, 0, 0
-      ], 3));
+      xzXLineGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([-halfSize, 0, 0, halfSize, 0, 0], 3)
+      );
       const xzXLine = new THREE.Line(xzXLineGeometry, material);
       group.add(xzXLine);
 
       // Z center line
       const zLineGeometry = new THREE.BufferGeometry();
-      zLineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, -halfSize,
-        0, 0, halfSize
-      ], 3));
+      zLineGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, -halfSize, 0, 0, halfSize], 3)
+      );
       const zLine = new THREE.Line(zLineGeometry, material);
       group.add(zLine);
       break;
@@ -155,19 +160,19 @@ function createCenterLines(
     case 'yz':
       // Y center line
       const yzYLineGeometry = new THREE.BufferGeometry();
-      yzYLineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, -halfSize, 0,
-        0, halfSize, 0
-      ], 3));
+      yzYLineGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, -halfSize, 0, 0, halfSize, 0], 3)
+      );
       const yzYLine = new THREE.Line(yzYLineGeometry, material);
       group.add(yzYLine);
 
       // Z center line
       const yzZLineGeometry = new THREE.BufferGeometry();
-      yzZLineGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, -halfSize,
-        0, 0, halfSize
-      ], 3));
+      yzZLineGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, -halfSize, 0, 0, halfSize], 3)
+      );
       const yzZLine = new THREE.Line(yzZLineGeometry, material);
       group.add(yzZLine);
       break;
@@ -184,8 +189,8 @@ function createCenterLines(
  * @returns Axis lines object
  */
 function createAxisLines(
-  size: number, 
-  opacity: number, 
+  size: number,
+  opacity: number,
   plane: 'xy' | 'xz' | 'yz'
 ): THREE.Object3D {
   const group = new THREE.Group();
@@ -198,7 +203,7 @@ function createAxisLines(
     color: 0xff0000,
     transparent: true,
     opacity: opacity,
-    linewidth: 3
+    linewidth: 3,
   });
 
   // Y axis (green)
@@ -206,7 +211,7 @@ function createAxisLines(
     color: 0x00ff00,
     transparent: true,
     opacity: opacity,
-    linewidth: 3
+    linewidth: 3,
   });
 
   // Z axis (blue)
@@ -214,7 +219,7 @@ function createAxisLines(
     color: 0x0000ff,
     transparent: true,
     opacity: opacity,
-    linewidth: 3
+    linewidth: 3,
   });
 
   // Create axis lines based on plane
@@ -222,19 +227,19 @@ function createAxisLines(
     case 'xy':
       // X axis
       const xAxisGeometry = new THREE.BufferGeometry();
-      xAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, 0,
-        halfSize, 0, 0
-      ], 3));
+      xAxisGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, 0, halfSize, 0, 0], 3)
+      );
       const xAxis = new THREE.Line(xAxisGeometry, xAxisMaterial);
       group.add(xAxis);
 
       // Y axis
       const yAxisGeometry = new THREE.BufferGeometry();
-      yAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, 0,
-        0, halfSize, 0
-      ], 3));
+      yAxisGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, 0, 0, halfSize, 0], 3)
+      );
       const yAxis = new THREE.Line(yAxisGeometry, yAxisMaterial);
       group.add(yAxis);
       break;
@@ -242,19 +247,19 @@ function createAxisLines(
     case 'xz':
       // X axis
       const xzXAxisGeometry = new THREE.BufferGeometry();
-      xzXAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, 0,
-        halfSize, 0, 0
-      ], 3));
+      xzXAxisGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, 0, halfSize, 0, 0], 3)
+      );
       const xzXAxis = new THREE.Line(xzXAxisGeometry, xAxisMaterial);
       group.add(xzXAxis);
 
       // Z axis
       const zAxisGeometry = new THREE.BufferGeometry();
-      zAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, 0,
-        0, 0, halfSize
-      ], 3));
+      zAxisGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, halfSize], 3)
+      );
       const zAxis = new THREE.Line(zAxisGeometry, zAxisMaterial);
       group.add(zAxis);
       break;
@@ -262,19 +267,19 @@ function createAxisLines(
     case 'yz':
       // Y axis
       const yzYAxisGeometry = new THREE.BufferGeometry();
-      yzYAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, 0,
-        0, halfSize, 0
-      ], 3));
+      yzYAxisGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, 0, 0, halfSize, 0], 3)
+      );
       const yzYAxis = new THREE.Line(yzYAxisGeometry, yAxisMaterial);
       group.add(yzYAxis);
 
       // Z axis
       const yzZAxisGeometry = new THREE.BufferGeometry();
-      yzZAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-        0, 0, 0,
-        0, 0, halfSize
-      ], 3));
+      yzZAxisGeometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, halfSize], 3)
+      );
       const yzZAxis = new THREE.Line(yzZAxisGeometry, zAxisMaterial);
       group.add(yzZAxis);
       break;
@@ -299,9 +304,9 @@ export function updateGridOverlay(
 
   // Create new grid overlay
   const newGridOverlay = createGridOverlay(preset, config);
-  
+
   // Copy children from new overlay
-  newGridOverlay.children.forEach(child => {
+  newGridOverlay.children.forEach((child) => {
     gridOverlay.add(child);
   });
 
@@ -315,7 +320,10 @@ export function updateGridOverlay(
  * @param opacity Line opacity
  * @returns Axis helper object
  */
-export function createAxisHelper(size: number = 5, opacity: number = 0.8): THREE.Object3D {
+export function createAxisHelper(
+  size: number = 5,
+  opacity: number = 0.8
+): THREE.Object3D {
   const group = new THREE.Group();
   group.name = 'AxisHelper';
 
@@ -324,7 +332,7 @@ export function createAxisHelper(size: number = 5, opacity: number = 0.8): THREE
     color: 0xff0000,
     transparent: true,
     opacity: opacity,
-    linewidth: 2
+    linewidth: 2,
   });
 
   // Y axis (green)
@@ -332,7 +340,7 @@ export function createAxisHelper(size: number = 5, opacity: number = 0.8): THREE
     color: 0x00ff00,
     transparent: true,
     opacity: opacity,
-    linewidth: 2
+    linewidth: 2,
   });
 
   // Z axis (blue)
@@ -340,33 +348,33 @@ export function createAxisHelper(size: number = 5, opacity: number = 0.8): THREE
     color: 0x0000ff,
     transparent: true,
     opacity: opacity,
-    linewidth: 2
+    linewidth: 2,
   });
 
   // Create axis lines
   const xAxisGeometry = new THREE.BufferGeometry();
-  xAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-    0, 0, 0,
-    size, 0, 0
-  ], 3));
+  xAxisGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([0, 0, 0, size, 0, 0], 3)
+  );
   const xAxis = new THREE.Line(xAxisGeometry, xAxisMaterial);
   group.add(xAxis);
 
   const yAxisGeometry = new THREE.BufferGeometry();
-  yAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-    0, 0, 0,
-    0, size, 0
-  ], 3));
+  yAxisGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([0, 0, 0, 0, size, 0], 3)
+  );
   const yAxis = new THREE.Line(yAxisGeometry, yAxisMaterial);
   group.add(yAxis);
 
   const zAxisGeometry = new THREE.BufferGeometry();
-  zAxisGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-    0, 0, 0,
-    0, 0, size
-  ], 3));
+  zAxisGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, size], 3)
+  );
   const zAxis = new THREE.Line(zAxisGeometry, zAxisMaterial);
   group.add(zAxis);
 
   return group;
-} 
+}

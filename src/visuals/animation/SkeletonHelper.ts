@@ -16,18 +16,21 @@ export interface SkeletonHelperOptions {
  * @param options Configuration options
  * @returns A Three.js SkeletonHelper object
  */
-export function SkeletonHelper(skeleton: Skeleton, options: SkeletonHelperOptions = {}): Object3D {
+export function SkeletonHelper(
+  skeleton: Skeleton,
+  options: SkeletonHelperOptions = {}
+): Object3D {
   // Create the Three.js SkeletonHelper
   const helper = new (eval('THREE.SkeletonHelper'))(skeleton.bones[0]);
-  
+
   // Apply options
   if (options.color !== undefined) {
     helper.material.color.set(options.color);
   }
-  
+
   if (options.visible !== undefined) {
     helper.visible = options.visible;
   }
-  
+
   return helper;
 }

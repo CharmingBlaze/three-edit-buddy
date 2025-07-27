@@ -1,1 +1,1 @@
-export { EditableMesh } from './EditableMesh.js'; 
+export { EditableMesh } from './EditableMesh.js';

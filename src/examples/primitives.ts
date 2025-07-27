@@ -10,7 +10,7 @@ import {
   type CylinderParams,
   type ConeParams,
   type PyramidParams,
-  type PlaneParams
+  type PlaneParams,
 } from '../primitives/index.js';
 
 /**
@@ -31,10 +31,10 @@ export function createSegmentedCube() {
     depthSegments: 3,
     material: {
       name: 'cube-material',
-      color: { x: 1, y: 0.5, z: 0.2 }
-    }
+      color: { x: 1, y: 0.5, z: 0.2 },
+    },
   };
-  
+
   return createCube(params);
 }
 
@@ -48,14 +48,14 @@ export function createCustomSphere() {
     heightSegments: 8,
     material: {
       name: 'sphere-material',
-      color: { x: 0.2, y: 0.8, z: 1 }
+      color: { x: 0.2, y: 0.8, z: 1 },
     },
     uvs: {
       enabled: true,
-      scale: { x: 2, y: 1 }
-    }
+      scale: { x: 2, y: 1 },
+    },
   };
-  
+
   return createSphere(params);
 }
 
@@ -70,10 +70,10 @@ export function createConeCylinder() {
     radialSegments: 16,
     material: {
       name: 'cylinder-material',
-      color: { x: 0.8, y: 0.2, z: 0.8 }
-    }
+      color: { x: 0.8, y: 0.2, z: 0.8 },
+    },
   };
-  
+
   return createCylinder(params);
 }
 
@@ -88,10 +88,10 @@ export function createOpenCone() {
     openEnded: true,
     material: {
       name: 'cone-material',
-      color: { x: 1, y: 1, z: 0.2 }
-    }
+      color: { x: 1, y: 1, z: 0.2 },
+    },
   };
-  
+
   return createCone(params);
 }
 
@@ -105,10 +105,10 @@ export function createHexagonalPyramid() {
     segments: 6,
     material: {
       name: 'pyramid-material',
-      color: { x: 0.2, y: 1, z: 0.2 }
-    }
+      color: { x: 0.2, y: 1, z: 0.2 },
+    },
   };
-  
+
   return createPyramid(params);
 }
 
@@ -123,14 +123,14 @@ export function createSegmentedPlane() {
     heightSegments: 6,
     material: {
       name: 'plane-material',
-      color: { x: 0.5, y: 0.5, z: 0.5 }
+      color: { x: 0.5, y: 0.5, z: 0.5 },
     },
     uvs: {
       enabled: true,
-      scale: { x: 2, y: 2 }
-    }
+      scale: { x: 2, y: 2 },
+    },
   };
-  
+
   return createPlane(params);
 }
 
@@ -144,6 +144,6 @@ export function createAllPrimitives() {
     cylinder: createCylinder(),
     cone: createCone(),
     pyramid: createPyramid(),
-    plane: createPlane()
+    plane: createPlane(),
   };
-} 
+}

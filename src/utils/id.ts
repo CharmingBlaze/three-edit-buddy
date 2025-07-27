@@ -62,4 +62,4 @@ export function resetIdCounters(): void {
   nextFaceId = 0;
   nextUVId = 0;
   nextMaterialId = 0;
-} 
+}

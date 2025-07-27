@@ -90,11 +90,11 @@ function onSelectionChange(newSelection) {
   // Remove old helpers
   scene.remove(vertexHighlight);
   scene.remove(gizmo);
-  
+
   // Create new helpers with updated selection
   vertexHighlight = HighlightVertices(mesh, newSelection, { color: 0xffff00 });
   gizmo = GizmoTranslate(mesh, newSelection, camera, { size: 1 });
-  
+
   // Add updated helpers to scene
   scene.add(vertexHighlight);
   scene.add(gizmo);

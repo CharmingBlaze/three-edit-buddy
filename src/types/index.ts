@@ -49,18 +49,23 @@ export interface EditableMesh {
   faces: Face[];
   materials: Material[];
   uvs: UV[];
-  
+
   addVertex(position: Vector3Like, name?: string): Vertex;
   addEdge(vertexId1: number, vertexId2: number, name?: string): Edge;
   addFace(vertexIds: number[], edgeIds: number[], name?: string): Face;
-  addMaterial(name: string, color?: Vector3Like, opacity?: number, transparent?: boolean): Material;
+  addMaterial(
+    name: string,
+    color?: Vector3Like,
+    opacity?: number,
+    transparent?: boolean
+  ): Material;
   addUV(vertexId: number, position: Vector2Like): UV;
 
   getVertex(vertexId: number): Vertex | undefined;
   getEdge(edgeId: number): Edge | undefined;
   getFace(faceId: number): Face | undefined;
   getUVsForVertex(vertexId: number): Array<{ coordinates: Vector2Like }>;
-  
+
   // Additional utility methods
   removeVertex(vertexId: number): void;
   removeEdge(edgeId: number): void;

@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { 
-  EditableMesh, 
-  createCube, 
-  SelectionManager, 
-  MeshVisualHelper 
+import {
+  EditableMesh,
+  createCube,
+  SelectionManager,
+  MeshVisualHelper,
 } from '../index.js';
 
 /**
@@ -15,17 +15,17 @@ export class SimpleDemo {
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
-  
+
   // Library components
   private mesh: EditableMesh;
   private selectionManager: SelectionManager;
   private visualHelper: MeshVisualHelper;
-  
+
   // Three.js objects
   private meshObject: THREE.Mesh;
   private raycaster: THREE.Raycaster;
   private mouse: THREE.Vector2;
-  
+
   // State
   private isDragging = false;
   private selectedVertexId: number | null = null;
@@ -33,7 +33,12 @@ export class SimpleDemo {
   constructor(container: HTMLElement) {
     // Setup Three.js
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
@@ -50,12 +55,12 @@ export class SimpleDemo {
 
     // Create mesh using library
     this.mesh = createCube();
-    
+
     // Create selection manager
     this.selectionManager = new SelectionManager(this.mesh, {
       threshold: 0.5,
       multiSelect: true,
-      toggleOnReclick: true
+      toggleOnReclick: true,
     });
 
     // Create visual helper
@@ -63,21 +68,21 @@ export class SimpleDemo {
       vertices: {
         color: 0xffff00,
         size: 0.1,
-        shape: 'cube'
+        shape: 'cube',
       },
       edges: {
         color: 0xff0000,
-        width: 2
+        width: 2,
       },
       faces: {
         color: 0x00ff00,
-        opacity: 0.3
+        opacity: 0.3,
       },
       selection: {
         selectedVertexColor: 0xff6600,
         selectedEdgeColor: 0x00ffff,
-        selectedFaceColor: 0xff6600
-      }
+        selectedFaceColor: 0xff6600,
+      },
     });
 
     // Create Three.js mesh
@@ -86,7 +91,7 @@ export class SimpleDemo {
       color: 0x667eea,
       transparent: true,
       opacity: 0.95,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
     });
     this.meshObject = new THREE.Mesh(geometry, material);
     this.scene.add(this.meshObject);
@@ -124,9 +129,18 @@ export class SimpleDemo {
 
   private setupEventListeners(): void {
     // Mouse events for selection and dragging
-    this.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this));
-    this.renderer.domElement.addEventListener('mousemove', this.onMouseMove.bind(this));
-    this.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this));
+    this.renderer.domElement.addEventListener(
+      'mousedown',
+      this.onMouseDown.bind(this)
+    );
+    this.renderer.domElement.addEventListener(
+      'mousemove',
+      this.onMouseMove.bind(this)
+    );
+    this.renderer.domElement.addEventListener(
+      'mouseup',
+      this.onMouseUp.bind(this)
+    );
 
     // Keyboard events
     document.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -140,17 +154,17 @@ export class SimpleDemo {
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    
+
     // Try to select vertex first
     const vertexObjects = this.visualHelper.getVisualObjects().vertexObjects;
     const vertexIntersects = this.raycaster.intersectObjects(vertexObjects);
-    
+
     if (vertexIntersects.length > 0) {
       const vertexObject = vertexIntersects[0].object as THREE.Mesh;
       this.selectedVertexId = vertexObject.userData.vertexId;
       this.isDragging = true;
       this.controls.enabled = false;
-      
+
       // Select the vertex
       this.selectionManager.selectVertex(this.selectedVertexId);
       this.visualHelper.updateVisuals();
@@ -161,7 +175,10 @@ export class SimpleDemo {
     const intersects = this.raycaster.intersectObject(this.meshObject);
     if (intersects.length > 0) {
       const intersection = intersects[0];
-      const selectedId = this.selectionManager.selectFromRaycast(intersection, 'face');
+      const selectedId = this.selectionManager.selectFromRaycast(
+        intersection,
+        'face'
+      );
       if (selectedId !== null) {
         this.visualHelper.updateVisuals();
       }
@@ -175,7 +192,7 @@ export class SimpleDemo {
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    
+
     // Create a plane at the vertex's current position
     const vertex = this.mesh.getVertex(this.selectedVertexId);
     if (!vertex) return;
@@ -193,7 +210,7 @@ export class SimpleDemo {
     this.mesh.moveVertex(this.selectedVertexId, {
       x: intersection.x,
       y: intersection.y,
-      z: intersection.z
+      z: intersection.z,
     });
 
     // Update the Three.js geometry
@@ -215,17 +232,20 @@ export class SimpleDemo {
     switch (event.code) {
       case 'KeyV':
         // Toggle vertex visibility
-        const currentVertexVisibility = this.visualHelper.getOptions().vertices.visible;
+        const currentVertexVisibility =
+          this.visualHelper.getOptions().vertices.visible;
         this.visualHelper.setVisibility('vertices', !currentVertexVisibility);
         break;
       case 'KeyE':
         // Toggle edge visibility
-        const currentEdgeVisibility = this.visualHelper.getOptions().edges.visible;
+        const currentEdgeVisibility =
+          this.visualHelper.getOptions().edges.visible;
         this.visualHelper.setVisibility('edges', !currentEdgeVisibility);
         break;
       case 'KeyF':
         // Toggle face visibility
-        const currentFaceVisibility = this.visualHelper.getOptions().faces.visible;
+        const currentFaceVisibility =
+          this.visualHelper.getOptions().faces.visible;
         this.visualHelper.setVisibility('faces', !currentFaceVisibility);
         break;
       case 'KeyC':
@@ -258,4 +278,4 @@ export class SimpleDemo {
     (this.meshObject.material as THREE.Material).dispose();
     this.renderer.dispose();
   }
-} 
+}

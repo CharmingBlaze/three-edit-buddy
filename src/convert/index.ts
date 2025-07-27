@@ -1,2 +1,2 @@
 export * from './exportOBJ.js';
-export * from './toBufferGeometry.js'; 
+export * from './toBufferGeometry.js';

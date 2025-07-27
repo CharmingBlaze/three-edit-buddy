@@ -21,20 +21,24 @@ export interface IKHelperOptions {
  * @param options Configuration options
  * @returns A Three.js Object3D representing the IK visualization
  */
-export function IKHelper(target: Vector3, pole?: Vector3, options: IKHelperOptions = {}): Object3D {
+export function IKHelper(
+  target: Vector3,
+  pole?: Vector3,
+  options: IKHelperOptions = {}
+): Object3D {
   // This is a placeholder implementation
   // In a real implementation, this would create visualizations for IK targets
-  
+
   const helper = new Object3D();
-  
+
   // Apply options
   if (options.visible !== undefined) {
     helper.visible = options.visible;
   }
-  
+
   // Store the target and pole positions for later updates
   (helper as any).ikTarget = target;
   (helper as any).ikPole = pole;
-  
+
   return helper;
 }

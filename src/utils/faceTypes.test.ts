@@ -6,7 +6,7 @@ import {
   isNGon,
   getFaceVertexCount,
   isValidFace,
-  getFaceTypeDescription
+  getFaceTypeDescription,
 } from './faceTypes.js';
 import type { Face } from '../types/index.js';
 
@@ -16,7 +16,7 @@ describe('Face Type Utilities', () => {
     vertexIds: Array.from({ length: vertexCount }, (_, i) => i),
     edgeIds: [],
     materialId: undefined,
-    uvIds: []
+    uvIds: [],
   });
 
   describe('getFaceType', () => {
@@ -104,4 +104,4 @@ describe('Face Type Utilities', () => {
       expect(getFaceTypeDescription(createFace(9))).toBe('9-gon');
     });
   });
-}); 
+});

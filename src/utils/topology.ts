@@ -6,10 +6,13 @@ import type { EditableMesh } from '../types/index.js';
  * @param vertexId The vertex ID to find connected faces for
  * @returns Array of face IDs connected to the vertex
  */
-export function getConnectedFaces(mesh: EditableMesh, vertexId: number): number[] {
+export function getConnectedFaces(
+  mesh: EditableMesh,
+  vertexId: number
+): number[] {
   return mesh.faces
-    .filter(face => face.vertexIds.includes(vertexId))
-    .map(face => face.id);
+    .filter((face) => face.vertexIds.includes(vertexId))
+    .map((face) => face.id);
 }
 
 /**
@@ -18,10 +21,13 @@ export function getConnectedFaces(mesh: EditableMesh, vertexId: number): number[
  * @param vertexId The vertex ID to find connected edges for
  * @returns Array of edge IDs connected to the vertex
  */
-export function getConnectedEdges(mesh: EditableMesh, vertexId: number): number[] {
+export function getConnectedEdges(
+  mesh: EditableMesh,
+  vertexId: number
+): number[] {
   return mesh.edges
-    .filter(edge => edge.vertexIds.includes(vertexId))
-    .map(edge => edge.id);
+    .filter((edge) => edge.vertexIds.includes(vertexId))
+    .map((edge) => edge.id);
 }
 
 /**
@@ -33,11 +39,11 @@ export function getConnectedEdges(mesh: EditableMesh, vertexId: number): number[
 export function isBoundaryEdge(mesh: EditableMesh, edgeId: number): boolean {
   const edge = mesh.getEdge(edgeId);
   if (!edge) return false;
-  
-  const connectedFaces = mesh.faces.filter(face => 
+
+  const connectedFaces = mesh.faces.filter((face) =>
     face.edgeIds.includes(edgeId)
   );
-  
+
   return connectedFaces.length <= 1;
 }
 
@@ -47,7 +53,10 @@ export function isBoundaryEdge(mesh: EditableMesh, edgeId: number): boolean {
  * @param vertexId The vertex ID to check
  * @returns True if the vertex is a boundary vertex
  */
-export function isBoundaryVertex(mesh: EditableMesh, vertexId: number): boolean {
+export function isBoundaryVertex(
+  mesh: EditableMesh,
+  vertexId: number
+): boolean {
   const connectedEdges = getConnectedEdges(mesh, vertexId);
-  return connectedEdges.some(edgeId => isBoundaryEdge(mesh, edgeId));
+  return connectedEdges.some((edgeId) => isBoundaryEdge(mesh, edgeId));
 }

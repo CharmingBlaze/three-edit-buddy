@@ -48,7 +48,10 @@ export function createViewportMenu(
 ): {
   element: HTMLElement;
   addEventListener: (type: MenuEventType, listener: MenuEventListener) => void;
-  removeEventListener: (type: MenuEventType, listener: MenuEventListener) => void;
+  removeEventListener: (
+    type: MenuEventType,
+    listener: MenuEventListener
+  ) => void;
   setPresets: (presets: CameraPreset[]) => void;
   destroy: () => void;
 } {
@@ -57,7 +60,7 @@ export function createViewportMenu(
     position = 'top-left',
     theme = 'dark',
     showIcons = true,
-    className = ''
+    className = '',
   } = config;
 
   // Create menu container
@@ -138,7 +141,10 @@ export function createViewportMenu(
   const eventListeners = new Map<MenuEventType, Set<MenuEventListener>>();
 
   // Add event listener helper
-  function addEventListener(type: MenuEventType, listener: MenuEventListener): void {
+  function addEventListener(
+    type: MenuEventType,
+    listener: MenuEventListener
+  ): void {
     if (!eventListeners.has(type)) {
       eventListeners.set(type, new Set());
     }
@@ -146,7 +152,10 @@ export function createViewportMenu(
   }
 
   // Remove event listener helper
-  function removeEventListener(type: MenuEventType, listener: MenuEventListener): void {
+  function removeEventListener(
+    type: MenuEventType,
+    listener: MenuEventListener
+  ): void {
     const listeners = eventListeners.get(type);
     if (listeners) {
       listeners.delete(listener);
@@ -157,15 +166,15 @@ export function createViewportMenu(
   function emitEvent(event: MenuEvent): void {
     const listeners = eventListeners.get(event.type);
     if (listeners) {
-      listeners.forEach(listener => listener(event));
+      listeners.forEach((listener) => listener(event));
     }
   }
 
   // Create menu items
   function createMenuItems(presetList: CameraPreset[]): void {
     dropdownMenu.innerHTML = '';
-    
-    presetList.forEach(preset => {
+
+    presetList.forEach((preset) => {
       const menuItem = document.createElement('div');
       menuItem.className = 'viewport-menu-item';
       menuItem.style.cssText = `
@@ -201,9 +210,8 @@ export function createViewportMenu(
 
       // Add hover effect
       menuItem.addEventListener('mouseenter', () => {
-        menuItem.style.backgroundColor = theme === 'dark' 
-          ? 'rgba(255, 255, 255, 0.1)' 
-          : 'rgba(0, 0, 0, 0.1)';
+        menuItem.style.backgroundColor =
+          theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
       });
 
       menuItem.addEventListener('mouseleave', () => {
@@ -215,7 +223,7 @@ export function createViewportMenu(
         emitEvent({
           type: 'preset-selected',
           preset,
-          panelId
+          panelId,
         });
         hideMenu();
       });
@@ -262,15 +270,13 @@ export function createViewportMenu(
 
   // Add hover effects to hamburger button
   hamburgerButton.addEventListener('mouseenter', () => {
-    hamburgerButton.style.background = theme === 'dark' 
-      ? 'rgba(0, 0, 0, 0.8)' 
-      : 'rgba(255, 255, 255, 1)';
+    hamburgerButton.style.background =
+      theme === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 1)';
   });
 
   hamburgerButton.addEventListener('mouseleave', () => {
-    hamburgerButton.style.background = theme === 'dark' 
-      ? 'rgba(0, 0, 0, 0.7)' 
-      : 'rgba(255, 255, 255, 0.9)';
+    hamburgerButton.style.background =
+      theme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.9)';
   });
 
   // Assemble menu
@@ -296,7 +302,7 @@ export function createViewportMenu(
     addEventListener,
     removeEventListener,
     setPresets,
-    destroy
+    destroy,
   };
 }
 
@@ -326,4 +332,4 @@ function getPresetIcon(preset: CameraPreset): string {
     default:
       return '👁️';
   }
-} 
+}

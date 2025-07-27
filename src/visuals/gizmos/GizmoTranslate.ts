@@ -27,20 +27,20 @@ export function GizmoTranslate(options: GizmoTranslateOptions = {}): Object3D {
     xColor = 0xff0000, // Red
     yColor = 0x00ff00, // Green
     zColor = 0x0000ff, // Blue
-    visible = true
+    visible = true,
   } = options;
-  
+
   // Create the gizmo object
   const gizmo = new Object3D();
-  
+
   // In a real implementation, this would create visual representations
   // of the X, Y, and Z axes for translation manipulation
-  
+
   // Apply options
   gizmo.visible = visible;
-  
+
   // Store options for later updates
   (gizmo as any).gizmoOptions = { size, xColor, yColor, zColor };
-  
+
   return gizmo;
 }

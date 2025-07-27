@@ -19,8 +19,8 @@ export type {
   ConeParams,
   PyramidParams,
   PlaneParams,
-  PrimitiveParams
+  PrimitiveParams,
 } from './core/ParamTypes.js';
 
 // Default parameters
-export { DEFAULT_PARAMS } from './core/ParamTypes.js'; 
+export { DEFAULT_PARAMS } from './core/ParamTypes.js';

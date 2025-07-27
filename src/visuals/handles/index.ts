@@ -12,5 +12,5 @@ export {
   EdgeHandles,
   EdgeHandlesOptions,
   FaceHandles,
-  FaceHandlesOptions
+  FaceHandlesOptions,
 };

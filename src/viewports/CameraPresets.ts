@@ -13,7 +13,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 0, -1],
     orthographicSize: 10,
     near: 0.1,
-    far: 1000
+    far: 1000,
   },
   front: {
     name: 'Front',
@@ -23,7 +23,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 1, 0],
     orthographicSize: 10,
     near: 0.1,
-    far: 1000
+    far: 1000,
   },
   right: {
     name: 'Right',
@@ -33,7 +33,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 1, 0],
     orthographicSize: 10,
     near: 0.1,
-    far: 1000
+    far: 1000,
   },
   left: {
     name: 'Left',
@@ -43,7 +43,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 1, 0],
     orthographicSize: 10,
     near: 0.1,
-    far: 1000
+    far: 1000,
   },
   back: {
     name: 'Back',
@@ -53,7 +53,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 1, 0],
     orthographicSize: 10,
     near: 0.1,
-    far: 1000
+    far: 1000,
   },
   bottom: {
     name: 'Bottom',
@@ -63,7 +63,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 0, 1],
     orthographicSize: 10,
     near: 0.1,
-    far: 1000
+    far: 1000,
   },
   perspective: {
     name: 'Perspective',
@@ -73,7 +73,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 1, 0],
     fov: 75,
     near: 0.1,
-    far: 1000
+    far: 1000,
   },
   isometric: {
     name: 'Isometric',
@@ -83,8 +83,8 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
     up: [0, 1, 0],
     orthographicSize: 10,
     near: 0.1,
-    far: 1000
-  }
+    far: 1000,
+  },
 };
 
 /**
@@ -94,7 +94,7 @@ const CAMERA_PRESETS: Record<CameraPreset, CameraPresetConfig> = {
  * @returns A configured Three.js camera
  */
 export function createCameraFromPreset(
-  preset: CameraPreset, 
+  preset: CameraPreset,
   customSettings?: {
     fov?: number;
     near?: number;
@@ -104,7 +104,7 @@ export function createCameraFromPreset(
   }
 ): THREE.PerspectiveCamera | THREE.OrthographicCamera {
   const config = CAMERA_PRESETS[preset];
-  
+
   if (!config) {
     throw new Error(`Unknown camera preset: ${preset}`);
   }
@@ -113,7 +113,8 @@ export function createCameraFromPreset(
     fov: customSettings?.fov ?? config.fov ?? 75,
     near: customSettings?.near ?? config.near ?? 0.1,
     far: customSettings?.far ?? config.far ?? 1000,
-    orthographicSize: customSettings?.orthographicSize ?? config.orthographicSize ?? 10
+    orthographicSize:
+      customSettings?.orthographicSize ?? config.orthographicSize ?? 10,
   };
 
   let camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
@@ -166,7 +167,9 @@ export function getAllCameraPresets(): CameraPreset[] {
  * @param preset The camera preset
  * @returns The preset configuration
  */
-export function getCameraPresetConfig(preset: CameraPreset): CameraPresetConfig {
+export function getCameraPresetConfig(
+  preset: CameraPreset
+): CameraPresetConfig {
   const config = CAMERA_PRESETS[preset];
   if (!config) {
     throw new Error(`Unknown camera preset: ${preset}`);
@@ -192,7 +195,7 @@ export function updateCameraToPreset(
   }
 ): void {
   const config = CAMERA_PRESETS[preset];
-  
+
   if (!config) {
     throw new Error(`Unknown camera preset: ${preset}`);
   }
@@ -201,7 +204,8 @@ export function updateCameraToPreset(
     fov: customSettings?.fov ?? config.fov ?? 75,
     near: customSettings?.near ?? config.near ?? 0.1,
     far: customSettings?.far ?? config.far ?? 1000,
-    orthographicSize: customSettings?.orthographicSize ?? config.orthographicSize ?? 10
+    orthographicSize:
+      customSettings?.orthographicSize ?? config.orthographicSize ?? 10,
   };
 
   // Update camera properties
@@ -210,12 +214,18 @@ export function updateCameraToPreset(
   camera.up.set(...config.up);
 
   // Update camera-specific properties
-  if (camera instanceof THREE.PerspectiveCamera && config.type === 'perspective') {
+  if (
+    camera instanceof THREE.PerspectiveCamera &&
+    config.type === 'perspective'
+  ) {
     camera.fov = settings.fov;
     camera.near = settings.near;
     camera.far = settings.far;
     camera.updateProjectionMatrix();
-  } else if (camera instanceof THREE.OrthographicCamera && config.type === 'orthographic') {
+  } else if (
+    camera instanceof THREE.OrthographicCamera &&
+    config.type === 'orthographic'
+  ) {
     camera.left = -settings.orthographicSize;
     camera.right = settings.orthographicSize;
     camera.top = settings.orthographicSize;
@@ -231,7 +241,9 @@ export function updateCameraToPreset(
  * @param preset The camera preset
  * @returns The grid plane ('xy', 'xz', 'yz')
  */
-export function getGridPlaneForPreset(preset: CameraPreset): 'xy' | 'xz' | 'yz' {
+export function getGridPlaneForPreset(
+  preset: CameraPreset
+): 'xy' | 'xz' | 'yz' {
   switch (preset) {
     case 'top':
     case 'bottom':
@@ -254,6 +266,8 @@ export function getGridPlaneForPreset(preset: CameraPreset): 'xy' | 'xz' | 'yz' 
  * @param preset The camera preset
  * @returns The camera type
  */
-export function getCameraTypeForPreset(preset: CameraPreset): 'perspective' | 'orthographic' {
+export function getCameraTypeForPreset(
+  preset: CameraPreset
+): 'perspective' | 'orthographic' {
   return CAMERA_PRESETS[preset]?.type ?? 'perspective';
-} 
+}

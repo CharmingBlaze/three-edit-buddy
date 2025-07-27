@@ -21,4 +21,4 @@ export * from './utils/index.js';
 export * from './selection/index.js';
 
 // Visual helpers
-export * from './visuals/index.js'; 
+export * from './visuals/index.js';

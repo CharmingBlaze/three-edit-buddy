@@ -1,24 +1,24 @@
-import type { EditableMesh, Face } from '../types/index.js';
+import type { EditableMesh } from '../types/index.js';
 
 /**
  * Returns the number of quad faces (4-sided) in the mesh.
  */
 export function countQuads(mesh: EditableMesh): number {
-  return mesh.faces.filter(face => face.vertexIds.length === 4).length;
+  return mesh.faces.filter((face) => face.vertexIds.length === 4).length;
 }
 
 /**
  * Returns the number of triangle faces (3-sided) in the mesh.
  */
 export function countTriangles(mesh: EditableMesh): number {
-  return mesh.faces.filter(face => face.vertexIds.length === 3).length;
+  return mesh.faces.filter((face) => face.vertexIds.length === 3).length;
 }
 
 /**
  * Returns the number of n-gon faces (faces with more than 4 sides) in the mesh.
  */
 export function countNGons(mesh: EditableMesh): number {
-  return mesh.faces.filter(face => face.vertexIds.length > 4).length;
+  return mesh.faces.filter((face) => face.vertexIds.length > 4).length;
 }
 
 /**
@@ -37,6 +37,6 @@ export function getMeshSummary(mesh: EditableMesh): {
     total: mesh.faces.length,
     quads,
     tris,
-    ngons
+    ngons,
   };
 }

@@ -30,7 +30,7 @@ export class PrimitiveBuilder {
    */
   addVertex(position: Vector3Like, name?: string): number {
     const hash = this.positionHash(position);
-    
+
     if (this.vertexMap.has(hash)) {
       return this.vertexMap.get(hash)!;
     }
@@ -45,7 +45,7 @@ export class PrimitiveBuilder {
    */
   addEdge(vertexId1: number, vertexId2: number, name?: string): number {
     const hash = this.edgeHash(vertexId1, vertexId2);
-    
+
     if (this.edgeMap.has(hash)) {
       return this.edgeMap.get(hash)!;
     }
@@ -63,9 +63,9 @@ export class PrimitiveBuilder {
       this.addEdge(vertexIds[0], vertexIds[1]),
       this.addEdge(vertexIds[1], vertexIds[2]),
       this.addEdge(vertexIds[2], vertexIds[3]),
-      this.addEdge(vertexIds[3], vertexIds[0])
+      this.addEdge(vertexIds[3], vertexIds[0]),
     ];
-    
+
     const face = this.mesh.addFace(vertexIds, edgeIds, name);
     return face.id;
   }
@@ -77,9 +77,9 @@ export class PrimitiveBuilder {
     const edgeIds = [
       this.addEdge(vertexIds[0], vertexIds[1]),
       this.addEdge(vertexIds[1], vertexIds[2]),
-      this.addEdge(vertexIds[2], vertexIds[0])
+      this.addEdge(vertexIds[2], vertexIds[0]),
     ];
-    
+
     const face = this.mesh.addFace(vertexIds, edgeIds, name);
     return face.id;
   }
@@ -87,7 +87,12 @@ export class PrimitiveBuilder {
   /**
    * Add material to the mesh
    */
-  addMaterial(name: string, color?: Vector3Like, opacity?: number, transparent?: boolean): number {
+  addMaterial(
+    name: string,
+    color?: Vector3Like,
+    opacity?: number,
+    transparent?: boolean
+  ): number {
     const material = this.mesh.addMaterial(name, color, opacity, transparent);
     return material.id;
   }
@@ -103,10 +108,14 @@ export class PrimitiveBuilder {
   /**
    * Generate UV coordinates for a grid of vertices
    */
-  generateGridUVs(vertexIds: number[][], scale: Vector2Like = { x: 1, y: 1 }, offset: Vector2Like = { x: 0, y: 0 }): void {
+  generateGridUVs(
+    vertexIds: number[][],
+    scale: Vector2Like = { x: 1, y: 1 },
+    offset: Vector2Like = { x: 0, y: 0 }
+  ): void {
     const rows = vertexIds.length;
     const cols = vertexIds[0]?.length || 0;
-    
+
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const vertexId = vertexIds[row]?.[col];
@@ -122,10 +131,19 @@ export class PrimitiveBuilder {
   /**
    * Generate UV coordinates for a circular arrangement
    */
-  generateCircularUVs(centerVertexId: number, ringVertexIds: number[], scale: Vector2Like = { x: 1, y: 1 }, offset: Vector2Like = { x: 0, y: 0 }): void {
+  generateCircularUVs(
+    centerVertexId: number,
+    ringVertexIds: number[],
+    scale: Vector2Like = { x: 1, y: 1 },
+    offset: Vector2Like = { x: 0, y: 0 }
+  ): void {
     // Center vertex gets UV (0.5, 0.5)
-    this.addUV(centerVertexId, 0.5 * scale.x + offset.x, 0.5 * scale.y + offset.y);
-    
+    this.addUV(
+      centerVertexId,
+      0.5 * scale.x + offset.x,
+      0.5 * scale.y + offset.y
+    );
+
     // Ring vertices get UVs in a circle
     for (let i = 0; i < ringVertexIds.length; i++) {
       const angle = (i / ringVertexIds.length) * 2 * Math.PI;
@@ -141,21 +159,23 @@ export class PrimitiveBuilder {
     const x = Math.round(position.x * 1000000) / 1000000;
     const y = Math.round(position.y * 1000000) / 1000000;
     const z = Math.round(position.z * 1000000) / 1000000;
-    
+
     // Convert negative zero to positive zero
     const normalizedX = x === 0 ? 0 : x;
     const normalizedY = y === 0 ? 0 : y;
     const normalizedZ = z === 0 ? 0 : z;
-    
+
     return `${normalizedX},${normalizedY},${normalizedZ}`;
   }
 
   private edgeHash(vertexId1: number, vertexId2: number): string {
     // Always use the smaller ID first for consistent hashing
-    return vertexId1 < vertexId2 ? `${vertexId1},${vertexId2}` : `${vertexId2},${vertexId1}`;
+    return vertexId1 < vertexId2
+      ? `${vertexId1},${vertexId2}`
+      : `${vertexId2},${vertexId1}`;
   }
 
   getMesh(): EditableMesh {
     return this.mesh;
   }
-} 
+}

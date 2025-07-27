@@ -1,5 +1,9 @@
 import { EditableMesh } from '../core/EditableMesh.js';
-import { BufferGeometry, Float32BufferAttribute, Uint32BufferAttribute } from 'three';
+import {
+  BufferGeometry,
+  Float32BufferAttribute,
+  Uint32BufferAttribute,
+} from 'three';
 import { Vector2Like, Vector3Like } from '../types';
 
 /**
@@ -61,12 +65,19 @@ export function toBufferGeometry(mesh: EditableMesh): BufferGeometry {
         const vertex = mesh.getVertex(vertexId);
         if (vertex) {
           // Add position
-          positions.push(getX(vertex.position), getY(vertex.position), getZ(vertex.position));
+          positions.push(
+            getX(vertex.position),
+            getY(vertex.position),
+            getZ(vertex.position)
+          );
 
           // Add UV coordinates
           const vertexUVs = mesh.getUVsForVertex(vertexId);
           if (vertexUVs.length > 0 && vertexUVs[0]?.coordinates) {
-            uvs.push(getX2D(vertexUVs[0].coordinates), getY2D(vertexUVs[0].coordinates));
+            uvs.push(
+              getX2D(vertexUVs[0].coordinates),
+              getY2D(vertexUVs[0].coordinates)
+            );
           } else {
             uvs.push(0, 0); // Default UV
           }
@@ -90,7 +101,7 @@ export function toBufferGeometry(mesh: EditableMesh): BufferGeometry {
         const v0 = faceVertexIndices[0];
         const v1 = faceVertexIndices[i];
         const v2 = faceVertexIndices[i + 1];
-        
+
         // Only add if all indices are defined
         if (v0 !== undefined && v1 !== undefined && v2 !== undefined) {
           indices.push(v0, v1, v2);
@@ -101,7 +112,7 @@ export function toBufferGeometry(mesh: EditableMesh): BufferGeometry {
 
   // Set attributes
   geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
-  
+
   if (uvs.length > 0) {
     geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
   }
@@ -145,8 +156,11 @@ export function toBufferGeometryWithMaterials(mesh: EditableMesh): {
   let indexOffset = 0;
 
   // Group faces by material
-  const facesByMaterial = new Map<number | undefined, Array<typeof mesh.faces[0]>>();
-  
+  const facesByMaterial = new Map<
+    number | undefined,
+    Array<(typeof mesh.faces)[0]>
+  >();
+
   for (const face of mesh.faces) {
     const materialId = face.materialSlotId;
     if (!facesByMaterial.has(materialId)) {
@@ -160,9 +174,11 @@ export function toBufferGeometryWithMaterials(mesh: EditableMesh): {
 
   // Process faces by material
   for (const [materialId, faces] of facesByMaterial) {
-    const materialIndex = materialId !== undefined ? 
-      mesh.materials.findIndex((m) => m.id === materialId) : -1;
-    
+    const materialIndex =
+      materialId !== undefined
+        ? mesh.materials.findIndex((m) => m.id === materialId)
+        : -1;
+
     const groupStart = indexOffset;
 
     for (const face of faces) {
@@ -173,12 +189,19 @@ export function toBufferGeometryWithMaterials(mesh: EditableMesh): {
           const vertex = mesh.getVertex(vertexId);
           if (vertex) {
             // Add position
-            positions.push(getX(vertex.position), getY(vertex.position), getZ(vertex.position));
+            positions.push(
+              getX(vertex.position),
+              getY(vertex.position),
+              getZ(vertex.position)
+            );
 
             // Add UV coordinates
             const vertexUVs = mesh.getUVsForVertex(vertexId);
             if (vertexUVs.length > 0 && vertexUVs[0]?.coordinates) {
-              uvs.push(getX2D(vertexUVs[0].coordinates), getY2D(vertexUVs[0].coordinates));
+              uvs.push(
+                getX2D(vertexUVs[0].coordinates),
+                getY2D(vertexUVs[0].coordinates)
+              );
             } else {
               uvs.push(0, 0); // Default UV
             }
@@ -203,7 +226,7 @@ export function toBufferGeometryWithMaterials(mesh: EditableMesh): {
           const v0 = faceVertexIndices[0];
           const v1 = faceVertexIndices[i];
           const v2 = faceVertexIndices[i + 1];
-          
+
           // Only add if all indices are defined
           if (v0 !== undefined && v1 !== undefined && v2 !== undefined) {
             indices.push(v0, v1, v2);
@@ -218,14 +241,15 @@ export function toBufferGeometryWithMaterials(mesh: EditableMesh): {
       materialGroups.push({
         start: groupStart,
         count: indexOffset - groupStart,
-        materialIndex: materialIndex !== undefined ? Math.max(0, materialIndex) : 0
+        materialIndex:
+          materialIndex !== undefined ? Math.max(0, materialIndex) : 0,
       });
     }
   }
 
   // Set attributes
   geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
-  
+
   if (uvs.length > 0) {
     geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
   }
@@ -241,4 +265,4 @@ export function toBufferGeometryWithMaterials(mesh: EditableMesh): {
   geometry.computeVertexNormals();
 
   return { geometry, materialGroups };
-} 
+}

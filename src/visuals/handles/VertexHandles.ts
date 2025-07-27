@@ -1,11 +1,11 @@
-import { 
-  InstancedMesh, 
-  BoxGeometry, 
+import {
+  InstancedMesh,
+  BoxGeometry,
   SphereGeometry,
-  MeshBasicMaterial, 
+  MeshBasicMaterial,
   Object3D,
   Matrix4,
-  Color
+  Color,
 } from 'three';
 import { EditableMesh } from '../../core/EditableMesh.js';
 import { Selection } from '../../types';
@@ -43,7 +43,7 @@ export interface VertexHandlesOptions {
  * @returns A Three.js Object3D containing the vertex handles
  */
 export function VertexHandles(
-  mesh: EditableMesh, 
+  mesh: EditableMesh,
   selection: Selection,
   options: VertexHandlesOptions = {}
 ): Object3D {
@@ -54,7 +54,7 @@ export function VertexHandles(
     onlySelected = false,
     selectedColor = 0xffff00, // Yellow
     opacity = 1.0,
-    fixedSize = false
+    fixedSize = false,
   } = options;
 
   // Create a geometry based on the shape option
@@ -74,13 +74,13 @@ export function VertexHandles(
     color: new Color(color),
     transparent: opacity < 1.0,
     opacity,
-    depthTest: true
+    depthTest: true,
   });
 
   // Determine which vertices to show
-  const verticesToShow = onlySelected 
+  const verticesToShow = onlySelected
     ? Array.from(selection.selectedVertices)
-    : mesh.vertices.map(v => v.id);
+    : mesh.vertices.map((v) => v.id);
 
   // Create an instanced mesh for performance
   const instancedMesh = new InstancedMesh(
@@ -94,13 +94,13 @@ export function VertexHandles(
   // Position each instance at a vertex
   const matrix = new Matrix4();
   let instanceIndex = 0;
-  
+
   for (const vertexId of verticesToShow) {
     const vertex = mesh.getVertex(vertexId);
     if (vertex) {
       // Get position from vertex
       const position = vertex.position;
-      
+
       // Handle both array and object formats for Vector3Like
       let x, y, z;
       if (Array.isArray(position)) {
@@ -114,12 +114,12 @@ export function VertexHandles(
       // Set the matrix for this instance
       matrix.setPosition(x, y, z);
       instancedMesh.setMatrixAt(instanceIndex, matrix);
-      
+
       // Set color (selected or regular)
       const isSelected = selection.selectedVertices.has(vertexId);
       const handleColor = isSelected ? selectedColor : color;
       instancedMesh.setColorAt(instanceIndex, new Color(handleColor));
-      
+
       instanceIndex++;
     }
   }
@@ -128,12 +128,27 @@ export function VertexHandles(
   // to scale the handles based on camera distance
   if (fixedSize) {
     const originalOnBeforeRender = instancedMesh.onBeforeRender;
-    instancedMesh.onBeforeRender = function(renderer, scene, camera, geometry, material, group) {
+    instancedMesh.onBeforeRender = function (
+      renderer,
+      scene,
+      camera,
+      geometry,
+      material,
+      group
+    ) {
       // Call the original onBeforeRender if it exists
       if (originalOnBeforeRender) {
-        originalOnBeforeRender.call(this, renderer, scene, camera, geometry, material, group);
+        originalOnBeforeRender.call(
+          this,
+          renderer,
+          scene,
+          camera,
+          geometry,
+          material,
+          group
+        );
       }
-      
+
       // TODO: Implement fixed size scaling based on camera distance
       // This would require updating the scale of each instance based on camera distance
       // which is complex with InstancedMesh and would be better implemented

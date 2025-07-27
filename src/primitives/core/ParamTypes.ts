@@ -1,4 +1,4 @@
-import type { Vector3Like, Vector2Like } from '../../types/index.js';
+// Parameter types for primitives
 import type { PrimitiveParams } from './PrimitiveBuilder.js';
 
 export interface CubeParams extends PrimitiveParams {
@@ -63,7 +63,7 @@ export const DEFAULT_PARAMS = {
     depth: 1,
     widthSegments: 1,
     heightSegments: 1,
-    depthSegments: 1
+    depthSegments: 1,
   },
   sphere: {
     radius: 1,
@@ -72,7 +72,7 @@ export const DEFAULT_PARAMS = {
     phiStart: 0,
     phiLength: Math.PI * 2,
     thetaStart: 0,
-    thetaLength: Math.PI
+    thetaLength: Math.PI,
   },
   cylinder: {
     radiusTop: 1,
@@ -82,7 +82,7 @@ export const DEFAULT_PARAMS = {
     heightSegments: 1,
     openEnded: false,
     thetaStart: 0,
-    thetaLength: Math.PI * 2
+    thetaLength: Math.PI * 2,
   },
   cone: {
     radiusBottom: 1,
@@ -91,17 +91,17 @@ export const DEFAULT_PARAMS = {
     heightSegments: 1,
     openEnded: false,
     thetaStart: 0,
-    thetaLength: Math.PI * 2
+    thetaLength: Math.PI * 2,
   },
   pyramid: {
     size: 1,
     height: 1,
-    segments: 4
+    segments: 4,
   },
   plane: {
     width: 1,
     height: 1,
     widthSegments: 1,
-    heightSegments: 1
-  }
-} as const; 
+    heightSegments: 1,
+  },
+} as const;
