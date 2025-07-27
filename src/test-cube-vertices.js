@@ -1,5 +1,5 @@
 // Test script to verify vertex sharing in cube
-import { createCube } from './src/primitives/cube/createCube.js';
+import { createCube } from './primitives/cube/createCube.js';
 
 console.log('Testing cube vertex sharing...');
 
