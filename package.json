@@ -6,13 +6,24 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CharmingBlaze/three-edit-buddy.git"
+  },
+  "homepage": "https://github.com/CharmingBlaze/three-edit-buddy#readme",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
+    "build:watch": "tsc --watch",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "demo": "npx vite src/demo --port 3000 --open",
-    "demo:build": "npx vite build src/demo --outDir dist/demo"
+    "demo": "vite src/demo --port 3000 --open",
+    "demo:build": "vite build src/demo --outDir dist/demo",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write .",
+    "docs": "typedoc --out docs src/index.ts"
   },
   "keywords": [
     "three.js",
@@ -28,7 +39,14 @@
   },
   "devDependencies": {
     "@types/three": "^0.160.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "prettier": "^3.6.2",
     "tsx": "^4.20.3",
+    "typedoc": "^0.28.7",
     "typescript": "^5.3.0",
     "vite": "^5.4.19",
     "vitest": "^1.0.0"
