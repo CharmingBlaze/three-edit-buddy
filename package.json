@@ -19,7 +19,7 @@
     "build:watch": "tsc --watch",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "dev": "vite --debug --port 3000 src/demo/index.html",
+    "dev": "vite --debug --port 3000",
     "demo": "vite src/demo --port 3000 --open",
     "demo:build": "vite build src/demo --outDir dist/demo",
     "lint": "eslint . --ext .ts,.tsx",
