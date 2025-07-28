@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { MockEditableMesh } from '../core/EditableMesh.mock.js';
-import { mergeVertices, mergeSpecificVertices } from './mergeVertices.js';
+import { MockEditableMesh } from '../../src/core/EditableMesh.mock.js';
+import { mergeVertices, mergeSpecificVertices } from '../../src/tools/mergeVertices.js';
 import { Vector3 } from 'three';
 
 function makeMesh(vertices: { x: number, y: number, z: number }[], faces: number[][] = [], edges: number[][] = []) {

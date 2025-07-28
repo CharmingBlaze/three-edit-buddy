@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { subdivideEdge, subdivideEdges } from './subdivideEdge.js';
-import { MockEditableMesh } from '../core/EditableMesh.mock.js';
+import { subdivideEdge, subdivideEdges } from '../../src/tools/subdivideEdge.js';
+import { MockEditableMesh } from '../../src/core/EditableMesh.mock.js';
 import { Vector3 } from 'three';
 
 function makeMesh(vertices: { x: number, y: number, z: number }[], edges: number[][] = [], faces: number[][] = []) {
