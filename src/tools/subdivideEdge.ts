@@ -87,9 +87,15 @@ function updateFaceForEdgeSubdivision(
 
   // Create new face(s) based on the number of vertices
   if (newVertexIds.length === 4) {
-    builder.addQuad([newVertexIds[0]!, newVertexIds[1]!, newVertexIds[2]!, newVertexIds[3]!], `subdivided-face-${face.id}`);
+    builder.addQuad(
+      [newVertexIds[0]!, newVertexIds[1]!, newVertexIds[2]!, newVertexIds[3]!],
+      `subdivided-face-${face.id}`
+    );
   } else if (newVertexIds.length === 3) {
-    builder.addTriangle([newVertexIds[0]!, newVertexIds[1]!, newVertexIds[2]!], `subdivided-face-${face.id}`);
+    builder.addTriangle(
+      [newVertexIds[0]!, newVertexIds[1]!, newVertexIds[2]!],
+      `subdivided-face-${face.id}`
+    );
   } else {
     // N-gon: split into triangles or quads
     splitNGonIntoFaces(mesh, builder, newVertexIds, face.id);
@@ -112,7 +118,11 @@ function splitNGonIntoFaces(
   // For simplicity, we'll create a triangle fan
   // A more sophisticated approach would try to create quads where possible
   for (let i = 1; i < vertexCount - 1; i++) {
-    const triangle: [number, number, number] = [vertexIds[0]!, vertexIds[i]!, vertexIds[i + 1]!];
+    const triangle: [number, number, number] = [
+      vertexIds[0]!,
+      vertexIds[i]!,
+      vertexIds[i + 1]!,
+    ];
 
     builder.addTriangle(triangle, `subdivided-face-${originalFaceId}-${i}`);
   }

@@ -101,7 +101,12 @@ export function insetFaces(
         const v1 = insetVertexIds[1];
         const v2 = insetVertexIds[2];
         const v3 = insetVertexIds[3];
-        if (v0 !== undefined && v1 !== undefined && v2 !== undefined && v3 !== undefined) {
+        if (
+          v0 !== undefined &&
+          v1 !== undefined &&
+          v2 !== undefined &&
+          v3 !== undefined
+        ) {
           const insetFaceId = builder.addQuad([v0, v1, v2, v3]);
           newInsetFaceIds.push(insetFaceId);
         }

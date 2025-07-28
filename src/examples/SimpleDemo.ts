@@ -160,13 +160,17 @@ export class SimpleDemo {
     const vertexIntersects = this.raycaster.intersectObjects(vertexObjects);
 
     if (vertexIntersects.length > 0) {
-      const vertexObject = vertexIntersects[0].object as THREE.Mesh;
-      this.selectedVertexId = vertexObject.userData.vertexId;
-      this.isDragging = true;
-      this.controls.enabled = false;
+      const vertexObject = vertexIntersects[0]?.object as THREE.Mesh;
+      if (vertexObject) {
+        this.selectedVertexId = vertexObject.userData.vertexId;
+        this.isDragging = true;
+        this.controls.enabled = false;
 
-      // Select the vertex
-      this.selectionManager.selectVertex(this.selectedVertexId);
+        // Select the vertex
+        if (this.selectedVertexId !== null) {
+          this.selectionManager.selectVertex(this.selectedVertexId);
+        }
+      }
       this.visualHelper.updateVisuals();
       return;
     }
@@ -175,12 +179,18 @@ export class SimpleDemo {
     const intersects = this.raycaster.intersectObject(this.meshObject);
     if (intersects.length > 0) {
       const intersection = intersects[0];
-      const selectedId = this.selectionManager.selectFromRaycast(
-        intersection,
-        'face'
-      );
-      if (selectedId !== null) {
-        this.visualHelper.updateVisuals();
+      if (intersection) {
+        const selectedId = this.selectionManager.selectFromRaycast(
+          {
+            faceIndex: intersection.faceIndex ?? 0,
+            face: { normal: intersection.face?.normal ?? { x: 0, y: 0, z: 1 } },
+            point: intersection.point,
+          },
+          'face'
+        );
+        if (selectedId !== null) {
+          this.visualHelper.updateVisuals();
+        }
       }
     }
   }
@@ -233,19 +243,19 @@ export class SimpleDemo {
       case 'KeyV':
         // Toggle vertex visibility
         const currentVertexVisibility =
-          this.visualHelper.getOptions().vertices.visible;
+          this.visualHelper.getOptions().vertices?.visible ?? true;
         this.visualHelper.setVisibility('vertices', !currentVertexVisibility);
         break;
       case 'KeyE':
         // Toggle edge visibility
         const currentEdgeVisibility =
-          this.visualHelper.getOptions().edges.visible;
+          this.visualHelper.getOptions().edges?.visible ?? true;
         this.visualHelper.setVisibility('edges', !currentEdgeVisibility);
         break;
       case 'KeyF':
         // Toggle face visibility
         const currentFaceVisibility =
-          this.visualHelper.getOptions().faces.visible;
+          this.visualHelper.getOptions().faces?.visible ?? true;
         this.visualHelper.setVisibility('faces', !currentFaceVisibility);
         break;
       case 'KeyC':

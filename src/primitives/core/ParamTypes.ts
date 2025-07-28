@@ -57,6 +57,27 @@ export interface PlaneParams extends PrimitiveParams {
   heightSegments?: number;
 }
 
+export interface TorusParams extends PrimitiveParams {
+  radius?: number;
+  tubeRadius?: number;
+  radialSegments?: number;
+  tubularSegments?: number;
+  arcStart?: number;
+  arcLength?: number;
+}
+
+export interface OctahedronParams extends PrimitiveParams {
+  size?: number;
+}
+
+export interface DodecahedronParams extends PrimitiveParams {
+  size?: number;
+}
+
+export interface IcosahedronParams extends PrimitiveParams {
+  size?: number;
+}
+
 export const DEFAULT_PARAMS = {
   cube: {
     size: 1,
@@ -105,5 +126,22 @@ export const DEFAULT_PARAMS = {
     height: 1,
     widthSegments: 1,
     heightSegments: 1,
+  },
+  torus: {
+    radius: 1,
+    tubeRadius: 0.3,
+    radialSegments: 8,
+    tubularSegments: 6,
+    arcStart: 0,
+    arcLength: Math.PI * 2,
+  },
+  octahedron: {
+    size: 1,
+  },
+  dodecahedron: {
+    size: 1,
+  },
+  icosahedron: {
+    size: 1,
   },
 } as const;

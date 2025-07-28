@@ -1,4 +1,5 @@
-import { createCube, createSphere } from '../primitives/index.js';
+import { createCube } from '../primitives/cube/createCube.js';
+import { createSphere } from '../primitives/sphere/createSphere.js';
 import { extrudeFaces, subdivideEdge, mergeVertices } from '../tools/index.js';
 import { validateMeshTopology } from '../validate/index.js';
 
@@ -32,8 +33,8 @@ export function subdivideSphereEdges() {
   // Create a sphere with moderate segmentation
   const sphere = createSphere({
     radius: 1.5,
-    widthSegments: 8,
-    heightSegments: 6,
+    segments: 8,
+    rings: 6,
   });
 
   // Get the first 5 edge IDs
@@ -97,9 +98,6 @@ export function complexCubeModification() {
   // Create a segmented cube
   const cube = createCube({
     size: 2,
-    widthSegments: 2,
-    heightSegments: 2,
-    depthSegments: 2,
   });
 
   console.log(

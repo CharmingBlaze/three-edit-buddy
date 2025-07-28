@@ -21,7 +21,7 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
 
   // Check for orphaned vertices
   for (const vertex of mesh.vertices) {
-    const connectedEdges = mesh.edges.filter(edge => 
+    const connectedEdges = mesh.edges.filter((edge) =>
       edge.vertexIds.includes(vertex.id)
     );
     if (connectedEdges.length === 0) {
@@ -31,7 +31,7 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
 
   // Check for orphaned edges
   for (const edge of mesh.edges) {
-    const connectedFaces = mesh.faces.filter(face => 
+    const connectedFaces = mesh.faces.filter((face) =>
       face.edgeIds.includes(edge.id)
     );
     if (connectedFaces.length === 0) {
@@ -89,7 +89,7 @@ export function validateMeshTopology(mesh: EditableMesh): ValidationResult {
 
   // Check for non-manifold edges
   for (const edge of mesh.edges) {
-    const connectedFaces = mesh.faces.filter(face => 
+    const connectedFaces = mesh.faces.filter((face) =>
       face.edgeIds.includes(edge.id)
     );
     if (connectedFaces.length > 2) {
@@ -125,7 +125,7 @@ export function checkNonManifold(mesh: EditableMesh): ValidationResult {
 
   // Check for edges with more than 2 connected faces
   for (const edge of mesh.edges) {
-    const connectedFaces = mesh.faces.filter(face => 
+    const connectedFaces = mesh.faces.filter((face) =>
       face.edgeIds.includes(edge.id)
     );
     if (connectedFaces.length > 2) {

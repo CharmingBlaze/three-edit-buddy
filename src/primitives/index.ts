@@ -10,6 +10,10 @@ export { createCylinder } from './cylinder/createCylinder.js';
 export { createCone } from './cone/createCone.js';
 export { createPyramid } from './pyramid/createPyramid.js';
 export { createPlane } from './plane/createPlane.js';
+export { createTorus } from './torus/createTorus.js';
+export { createOctahedron } from './octahedron/createOctahedron.js';
+export { createDodecahedron } from './dodecahedron/createDodecahedron.js';
+export { createIcosahedron } from './icosahedron/createIcosahedron.js';
 
 // Parameter types
 export type {
@@ -19,6 +23,10 @@ export type {
   ConeParams,
   PyramidParams,
   PlaneParams,
+  TorusParams,
+  OctahedronParams,
+  DodecahedronParams,
+  IcosahedronParams,
   PrimitiveParams,
 } from './core/ParamTypes.js';
 

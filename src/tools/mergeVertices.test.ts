@@ -1,32 +1,20 @@
 import { describe, it, expect } from 'vitest';
+import { MockEditableMesh } from '../core/EditableMesh.mock.js';
 import { mergeVertices, mergeSpecificVertices } from './mergeVertices.js';
+import { Vector3 } from 'three';
 
-function makeMesh(vertices, faces = [], edges = []) {
-  return {
-    vertices: vertices.map((pos, i) => ({ id: i, position: { ...pos } })),
-    faces: faces.map((f, i) => ({
-      id: i,
-      vertexIds: f,
-      edgeIds: [],
-      materialId: undefined,
-      uvIds: [],
-    })),
-    edges: edges.map((e, i) => ({ id: i, vertexIds: e })),
-    materials: [],
-    uvs: [],
-    addFace(...args) {
-      return { id: this.faces.length, ...args };
-    },
-    addEdge(...args) {
-      return { id: this.edges.length, ...args };
-    },
-    addVertex(pos) {
-      return (
-        this.vertices.push({ id: this.vertices.length, position: { ...pos } }) -
-        1
-      );
-    },
-  };
+function makeMesh(vertices: { x: number, y: number, z: number }[], faces: number[][] = [], edges: number[][] = []) {
+  const mesh = new MockEditableMesh();
+  for (const v of vertices) {
+    mesh.addVertex(new Vector3(v.x, v.y, v.z));
+  }
+  for (const f of faces) {
+    mesh.addFace(f);
+  }
+  for (const e of edges) {
+    mesh.addEdge(e[0], e[1]);
+  }
+  return mesh;
 }
 
 describe('mergeVertices', () => {

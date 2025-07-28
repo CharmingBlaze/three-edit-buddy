@@ -72,5 +72,3 @@ export function triangulateMesh(mesh: EditableMesh): {
   const newFaces = triangulateFaces(mesh, nonTriangularFaceIds);
   return { newFaces, deletedFaces: nonTriangularFaceIds };
 }
-
-

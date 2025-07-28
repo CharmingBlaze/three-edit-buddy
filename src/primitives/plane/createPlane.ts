@@ -1,35 +1,37 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
-
-export interface PlaneParams {
-  size?: number;
-}
+import type { PlaneParams } from '../core/ParamTypes.js';
 
 /**
  * Creates a plane primitive
  */
 export function createPlane(params: PlaneParams = {}): EditableMesh {
-  const { size = 1 } = params;
-  const halfSize = size / 2;
+  const { 
+    width = 1, 
+    height = 1
+  } = params;
+  
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
 
   const mesh = new EditableMesh();
 
   // Create vertices
   const vertices = [
     {
-      id: mesh.addVertex({ x: -halfSize, y: 0, z: -halfSize }).id,
-      position: { x: -halfSize, y: 0, z: -halfSize },
+      id: mesh.addVertex({ x: -halfWidth, y: 0, z: -halfHeight }).id,
+      position: { x: -halfWidth, y: 0, z: -halfHeight },
     }, // 0
     {
-      id: mesh.addVertex({ x: halfSize, y: 0, z: -halfSize }).id,
-      position: { x: halfSize, y: 0, z: -halfSize },
+      id: mesh.addVertex({ x: halfWidth, y: 0, z: -halfHeight }).id,
+      position: { x: halfWidth, y: 0, z: -halfHeight },
     }, // 1
     {
-      id: mesh.addVertex({ x: halfSize, y: 0, z: halfSize }).id,
-      position: { x: halfSize, y: 0, z: halfSize },
+      id: mesh.addVertex({ x: halfWidth, y: 0, z: halfHeight }).id,
+      position: { x: halfWidth, y: 0, z: halfHeight },
     }, // 2
     {
-      id: mesh.addVertex({ x: -halfSize, y: 0, z: halfSize }).id,
-      position: { x: -halfSize, y: 0, z: halfSize },
+      id: mesh.addVertex({ x: -halfWidth, y: 0, z: halfHeight }).id,
+      position: { x: -halfWidth, y: 0, z: halfHeight },
     }, // 3
   ];
 

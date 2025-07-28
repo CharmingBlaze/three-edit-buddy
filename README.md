@@ -7,14 +7,15 @@ A comprehensive, modular 3D editing library for Three.js that supports flexible 
 The library now includes powerful selection and visualization systems that make it incredibly easy to build interactive 3D editors:
 
 ### **SelectionManager** - Smart Selection System
+
 ```typescript
 import { SelectionManager } from 'three-edit-buddy';
 
 // Create a selection manager for your mesh
 const selectionManager = new SelectionManager(mesh, {
-  threshold: 0.5,        // Picking distance
-  multiSelect: true,     // Allow multiple selections
-  toggleOnReclick: true  // Toggle selection on re-click
+  threshold: 0.5, // Picking distance
+  multiSelect: true, // Allow multiple selections
+  toggleOnReclick: true, // Toggle selection on re-click
 });
 
 // Easy selection from raycast
@@ -27,6 +28,7 @@ selectionManager.selectEdgesWithSelectedVertices();
 ```
 
 ### **MeshVisualHelper** - Complete Visual System
+
 ```typescript
 import { MeshVisualHelper } from 'three-edit-buddy';
 
@@ -35,21 +37,21 @@ const visualHelper = new MeshVisualHelper(mesh, selectionManager, {
   vertices: {
     color: 0xffff00,
     size: 0.1,
-    shape: 'cube'  // or 'sphere'
+    shape: 'cube', // or 'sphere'
   },
   edges: {
     color: 0xff0000,
-    width: 2
+    width: 2,
   },
   faces: {
     color: 0x00ff00,
-    opacity: 0.3
+    opacity: 0.3,
   },
   selection: {
     selectedVertexColor: 0xff6600,
     selectedEdgeColor: 0x00ffff,
-    selectedFaceColor: 0xff6600
-  }
+    selectedFaceColor: 0xff6600,
+  },
 });
 
 // Add to scene
@@ -64,8 +66,13 @@ visualHelper.updateVisuals();
 ```
 
 ### **Complete Demo in 50 Lines**
+
 ```typescript
-import { createCube, SelectionManager, MeshVisualHelper } from 'three-edit-buddy';
+import {
+  createCube,
+  SelectionManager,
+  MeshVisualHelper,
+} from 'three-edit-buddy';
 
 // Create mesh and helpers
 const mesh = createCube();
@@ -80,7 +87,7 @@ scene.add(meshObject);
 
 // Add visual groups
 const groups = visualHelper.getVisualGroups();
-Object.values(groups).forEach(group => scene.add(group));
+Object.values(groups).forEach((group) => scene.add(group));
 
 // Handle mouse events
 raycaster.setFromCamera(mouse, camera);
@@ -94,6 +101,7 @@ if (intersects.length > 0) {
 ## 🎯 **Key Features**
 
 ### **🏗️ Core Architecture**
+
 - **Headless Design**: Core library is completely headless (no Three.js dependencies)
 - **Modular Structure**: One concept per file, shared utilities in `/utils`
 - **Topology-First**: All editing operations maintain proper mesh connectivity
@@ -101,6 +109,7 @@ if (intersects.length > 0) {
 - **✅ Fully Compiled**: All TypeScript compilation errors resolved
 
 ### **📦 Core System**
+
 - **EditableMesh** data structure with topology management
 - **Vertex, Edge, Face, UV, Material** types with proper connections
 - **ID generation system** for unique element identification
@@ -109,6 +118,7 @@ if (intersects.length > 0) {
 - **Topology conversion** (toEditableMesh, toBufferGeometry)
 
 ### **🎨 Primitives (All Implemented with Shared Vertices)**
+
 - **createCube** - 8 vertices, 12 edges, 6 quad faces
 - **createSphere** - ~42 vertices, ~80 edges, ~40 faces (mixed quads/triangles)
 - **createCylinder** - ~18 vertices, ~40 edges, ~24 faces
@@ -119,6 +129,7 @@ if (intersects.length > 0) {
 - **createGrid** - Configurable segments with shared vertices
 
 ### **🔧 Editing Tools**
+
 - **extrudeFaces** - Extrude selected faces with proper topology
 - **mergeVertices** - Merge vertices within threshold
 - **subdivideEdge** - Subdivide edges with topology maintenance
@@ -130,6 +141,7 @@ if (intersects.length > 0) {
 - **bridgeFaces** - Bridge between faces
 
 ### **✅ Validation & Utilities**
+
 - **validateMeshIntegrity** - Check mesh consistency
 - **validateMeshTopology** - Check topology validity
 - **checkFaceWinding** - Check and fix face winding
@@ -138,6 +150,7 @@ if (intersects.length > 0) {
 - **Face type utilities** (getFaceType, isQuad, isTriangle, isNGon)
 
 ### **🎨 Visual Helpers (Three.js Dependent)**
+
 - **SelectionManager** - Complete selection system with smart operations
 - **MeshVisualHelper** - Comprehensive visual system for vertices, edges, faces, and selection
 - **GizmoTranslate** - Translation gizmo
@@ -160,11 +173,13 @@ if (intersects.length > 0) {
 ## 📚 **Quick Start**
 
 ### **Installation**
+
 ```bash
 npm install three-edit-buddy
 ```
 
 ### **Basic Usage**
+
 ```typescript
 import { createCube, EditableMesh } from 'three-edit-buddy';
 
@@ -181,6 +196,7 @@ scene.add(cube);
 ```
 
 ### **Interactive Editing**
+
 ```typescript
 import { SelectionManager, MeshVisualHelper } from 'three-edit-buddy';
 
@@ -195,7 +211,7 @@ if (intersects.length > 0) {
   // Select face
   selectionManager.selectFromRaycast(intersects[0], 'face');
   visualHelper.updateVisuals();
-  
+
   // Or select vertex
   selectionManager.selectFromRaycast(intersects[0], 'vertex');
   visualHelper.updateVisuals();
@@ -203,6 +219,7 @@ if (intersects.length > 0) {
 ```
 
 ### **Vertex Editing**
+
 ```typescript
 // Move a vertex (updates all connected faces/edges automatically)
 mesh.moveVertex(vertexId, { x: 1, y: 0, z: 0 });
@@ -216,6 +233,7 @@ meshObject.geometry = newGeometry;
 ## 🏗️ **Architecture**
 
 ### **Core Principles**
+
 1. **Topology-First**: All operations maintain proper mesh connectivity
 2. **Shared Vertices**: Vertices are unique and referenced by faces/edges
 3. **ID-Based**: All elements have unique IDs for reliable referencing
@@ -318,10 +336,10 @@ Manages selection state and operations for an EditableMesh.
 
 ```typescript
 const selectionManager = new SelectionManager(mesh, {
-  threshold: 0.5,        // Picking distance
-  multiSelect: true,     // Allow multiple selections
-  clearOnSelect: false,  // Clear existing selection
-  toggleOnReclick: true  // Toggle selection on re-click
+  threshold: 0.5, // Picking distance
+  multiSelect: true, // Allow multiple selections
+  clearOnSelect: false, // Clear existing selection
+  toggleOnReclick: true, // Toggle selection on re-click
 });
 
 // Selection operations
@@ -347,21 +365,21 @@ const visualHelper = new MeshVisualHelper(mesh, selectionManager, {
   vertices: {
     color: 0xffff00,
     size: 0.1,
-    shape: 'cube'
+    shape: 'cube',
   },
   edges: {
     color: 0xff0000,
-    width: 2
+    width: 2,
   },
   faces: {
     color: 0x00ff00,
-    opacity: 0.3
+    opacity: 0.3,
   },
   selection: {
     selectedVertexColor: 0xff6600,
     selectedEdgeColor: 0x00ffff,
-    selectedFaceColor: 0xff6600
-  }
+    selectedFaceColor: 0xff6600,
+  },
 });
 
 // Get visual groups for scene
@@ -384,13 +402,13 @@ visualHelper.setVisibility('edges', false);
 All primitives create proper `EditableMesh` instances with shared vertices:
 
 ```typescript
-import { 
-  createCube, 
-  createSphere, 
-  createCylinder, 
-  createCone, 
-  createPyramid, 
-  createPlane 
+import {
+  createCube,
+  createSphere,
+  createCylinder,
+  createCone,
+  createPyramid,
+  createPlane,
 } from 'three-edit-buddy';
 
 // Create primitives with options
@@ -441,6 +459,7 @@ npm run demo
 ```
 
 **Demo Features:**
+
 - **6 Primitive Types**: Cube, Sphere, Cylinder, Cone, Pyramid, Plane
 - **Real-time Highlighting**: Vertices (yellow cubes), Edges (red lines), Faces (green overlays)
 - **Interactive Selection**: Click to select vertices, edges, and faces
@@ -450,10 +469,11 @@ npm run demo
 - **Keyboard Shortcuts**: Spacebar for highlight cycling, V/E/F for visibility toggles
 
 **Controls:**
+
 - **Mouse**: Orbit camera, select elements, drag vertices
 - **Spacebar**: Cycle through highlight modes
 - **V**: Toggle vertex visibility
-- **E**: Toggle edge visibility  
+- **E**: Toggle edge visibility
 - **F**: Toggle face visibility
 - **C**: Clear selection
 - **S**: Select connected vertices
@@ -461,6 +481,7 @@ npm run demo
 ## 🔧 **Development**
 
 ### **Setup**
+
 ```bash
 git clone https://github.com/your-repo/three-edit-buddy.git
 cd three-edit-buddy
@@ -468,16 +489,19 @@ npm install
 ```
 
 ### **Build**
+
 ```bash
 npm run build
 ```
 
 ### **Test**
+
 ```bash
 npm test
 ```
 
 ### **Dev Server**
+
 ```bash
 npm run dev
 ```

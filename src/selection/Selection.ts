@@ -190,9 +190,9 @@ export class Selection {
         // Add faces connected by edges by finding faces that share vertices
         for (const otherFace of mesh.faces) {
           if (otherFace.id === faceId) continue;
-          
+
           // Check if faces share any vertices
-          const sharedVertices = face.vertexIds.filter(id => 
+          const sharedVertices = face.vertexIds.filter((id) =>
             otherFace.vertexIds.includes(id)
           );
           if (sharedVertices.length >= 2) {

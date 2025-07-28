@@ -10,7 +10,7 @@ export type {
   EdgeVisualOptions,
   FaceVisualOptions,
   SelectionVisualOptions,
-} from './MeshVisualHelper.js';
+} from './options.js';
 
 // Existing visual helpers
 export * from './highlights/index.js';

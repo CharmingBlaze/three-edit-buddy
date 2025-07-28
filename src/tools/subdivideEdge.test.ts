@@ -1,32 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { subdivideEdge, subdivideEdges } from './subdivideEdge.js';
+import { MockEditableMesh } from '../core/EditableMesh.mock.js';
+import { Vector3 } from 'three';
 
-function makeMesh(vertices, edges, faces = []) {
-  return {
-    vertices: vertices.map((pos, i) => ({ id: i, position: { ...pos } })),
-    edges: edges.map((e, i) => ({ id: i, vertexIds: e })),
-    faces: faces.map((f, i) => ({
-      id: i,
-      vertexIds: f,
-      edgeIds: edges.map((_, j) => j),
-      materialId: undefined,
-      uvIds: [],
-    })),
-    materials: [],
-    uvs: [],
-    addFace(...args) {
-      return { id: this.faces.length, ...args };
-    },
-    addEdge(...args) {
-      return { id: this.edges.length, ...args };
-    },
-    addVertex(pos) {
-      const id = this.vertices.length;
-      const vertex = { id, position: { ...pos } };
-      this.vertices.push(vertex);
-      return vertex;
-    },
-  };
+function makeMesh(vertices: { x: number, y: number, z: number }[], edges: number[][] = [], faces: number[][] = []) {
+  const mesh = new MockEditableMesh();
+  for (const v of vertices) {
+    mesh.addVertex(new Vector3(v.x, v.y, v.z));
+  }
+  for (const e of edges) {
+    mesh.addEdge(e[0], e[1]);
+  }
+  for (const f of faces) {
+    mesh.addFace(f);
+  }
+  return mesh;
 }
 
 describe('subdivideEdge', () => {
