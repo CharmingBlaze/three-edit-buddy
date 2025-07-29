@@ -76,3 +76,4 @@ jspm_packages/
 
 # DynamoDB Local files
 .dynamodb/ 
+dev-server-output.txt
