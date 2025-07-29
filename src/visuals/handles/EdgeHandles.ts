@@ -10,8 +10,8 @@ import {
   Quaternion,
   Color,
 } from 'three';
-import { EditableMesh } from '../../core/EditableMesh.js';
-import { Selection } from '../../types';
+import type { EditableMesh } from '../../core/index.js';
+import type { Selection } from '../../types/index.js';
 
 /**
  * Shape options for edge handles

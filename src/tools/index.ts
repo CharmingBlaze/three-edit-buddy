@@ -15,3 +15,23 @@ export { quadrangulateFaces, quadrangulateMesh } from './quadrangulateFaces.js';
 export { dissolveEdges, dissolveFaces } from './dissolveElements.js';
 export { loopCut } from './loopCut.js';
 export { bridgeEdges } from './bridgeEdges.js';
+export { subdivideMesh } from './subdivideMesh.js';
+export { smoothMesh } from './smoothMesh.js';
+export { getConstrainedPosition } from './constraints.js';
+export { snapToGrid, findClosestVertex } from './snapping.js';
+
+// Phase 2: Advanced Editing Tools
+export { moveEdge, moveEdges, findClosestPointOnEdge } from './moveEdge.js';
+export { 
+  moveFace, 
+  moveFaces, 
+  getFaceCenter, 
+  getFaceNormal, 
+  moveFaceAlongNormal 
+} from './moveFace.js';
+export {
+  applyVertexSymmetry,
+  applyEdgeSymmetry,
+  applyFaceSymmetry,
+  createSymmetricalMesh,
+} from './symmetry.js';

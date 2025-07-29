@@ -253,5 +253,8 @@ function getVector2Components(v: Vector2Like): { x: number; y: number } {
   if (Array.isArray(v)) {
     return { x: v[0] ?? 0, y: v[1] ?? 0 };
   }
-  return { x: v.x, y: v.y };
+  if (v && typeof v === 'object' && 'x' in v && 'y' in v) {
+    return { x: v.x, y: v.y };
+  }
+  return { x: 0, y: 0 };
 }

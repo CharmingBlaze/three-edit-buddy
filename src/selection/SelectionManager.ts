@@ -332,4 +332,269 @@ export class SelectionManager {
   getOptions(): Required<SelectionOptions> {
     return { ...this.options };
   }
+
+  /**
+   * Selects multiple vertices at once
+   */
+  selectVertices(vertexIds: number[]): void {
+    if (this.options.clearOnSelect) {
+      this.clearSelection();
+    }
+
+    for (const vertexId of vertexIds) {
+      if (this.mesh.getVertex(vertexId)) {
+        this.state.selectedVertices.add(vertexId);
+      }
+    }
+  }
+
+  /**
+   * Selects multiple edges at once
+   */
+  selectEdges(edgeIds: number[]): void {
+    if (this.options.clearOnSelect) {
+      this.clearSelection();
+    }
+
+    for (const edgeId of edgeIds) {
+      if (this.mesh.getEdge(edgeId)) {
+        this.state.selectedEdges.add(edgeId);
+      }
+    }
+  }
+
+  /**
+   * Selects multiple faces at once
+   */
+  selectFaces(faceIds: number[]): void {
+    if (this.options.clearOnSelect) {
+      this.clearSelection();
+    }
+
+    for (const faceId of faceIds) {
+      if (this.mesh.getFace(faceId)) {
+        this.state.selectedFaces.add(faceId);
+      }
+    }
+  }
+
+  /**
+   * Selects all vertices in a bounding box
+   */
+  selectVerticesInBox(
+    minPoint: Vector3Like,
+    maxPoint: Vector3Like
+  ): void {
+    const selectedVertices: number[] = [];
+
+    for (const vertex of this.mesh.vertices) {
+      if (
+        vertex.position.x >= minPoint.x &&
+        vertex.position.x <= maxPoint.x &&
+        vertex.position.y >= minPoint.y &&
+        vertex.position.y <= maxPoint.y &&
+        vertex.position.z >= minPoint.z &&
+        vertex.position.z <= maxPoint.z
+      ) {
+        selectedVertices.push(vertex.id);
+      }
+    }
+
+    this.selectVertices(selectedVertices);
+  }
+
+  /**
+   * Selects all vertices within a radius of a point
+   */
+  selectVerticesInRadius(
+    center: Vector3Like,
+    radius: number
+  ): void {
+    const selectedVertices: number[] = [];
+
+    for (const vertex of this.mesh.vertices) {
+      const distance = Math.sqrt(
+        Math.pow(vertex.position.x - center.x, 2) +
+        Math.pow(vertex.position.y - center.y, 2) +
+        Math.pow(vertex.position.z - center.z, 2)
+      );
+
+      if (distance <= radius) {
+        selectedVertices.push(vertex.id);
+      }
+    }
+
+    this.selectVertices(selectedVertices);
+  }
+
+  /**
+   * Selects all edges within a radius of a point
+   */
+  selectEdgesInRadius(
+    center: Vector3Like,
+    radius: number
+  ): void {
+    const selectedEdges: number[] = [];
+
+    for (const edge of this.mesh.edges) {
+      const vertex1 = this.mesh.getVertex(edge.vertexIds[0]);
+      const vertex2 = this.mesh.getVertex(edge.vertexIds[1]);
+
+      if (vertex1 && vertex2) {
+        // Calculate edge midpoint
+        const midpoint = {
+          x: (vertex1.position.x + vertex2.position.x) / 2,
+          y: (vertex1.position.y + vertex2.position.y) / 2,
+          z: (vertex1.position.z + vertex2.position.z) / 2,
+        };
+
+        const distance = Math.sqrt(
+          Math.pow(midpoint.x - center.x, 2) +
+          Math.pow(midpoint.y - center.y, 2) +
+          Math.pow(midpoint.z - center.z, 2)
+        );
+
+        if (distance <= radius) {
+          selectedEdges.push(edge.id);
+        }
+      }
+    }
+
+    this.selectEdges(selectedEdges);
+  }
+
+  /**
+   * Selects all faces within a radius of a point
+   */
+  selectFacesInRadius(
+    center: Vector3Like,
+    radius: number
+  ): void {
+    const selectedFaces: number[] = [];
+
+    for (const face of this.mesh.faces) {
+      const vertices = face.vertexIds.map((vertexId) => this.mesh.getVertex(vertexId));
+      const validVertices = vertices.filter((v) => v !== undefined);
+
+      if (validVertices.length > 0) {
+        // Calculate face center
+        const centerX = validVertices.reduce((sum, v) => sum + v!.position.x, 0) / validVertices.length;
+        const centerY = validVertices.reduce((sum, v) => sum + v!.position.y, 0) / validVertices.length;
+        const centerZ = validVertices.reduce((sum, v) => sum + v!.position.z, 0) / validVertices.length;
+
+        const faceCenter = { x: centerX, y: centerY, z: centerZ };
+
+        const distance = Math.sqrt(
+          Math.pow(faceCenter.x - center.x, 2) +
+          Math.pow(faceCenter.y - center.y, 2) +
+          Math.pow(faceCenter.z - center.z, 2)
+        );
+
+        if (distance <= radius) {
+          selectedFaces.push(face.id);
+        }
+      }
+    }
+
+    this.selectFaces(selectedFaces);
+  }
+
+  /**
+   * Selects all vertices, edges, and faces in a radius
+   */
+  selectAllInRadius(
+    center: Vector3Like,
+    radius: number
+  ): void {
+    this.selectVerticesInRadius(center, radius);
+    this.selectEdgesInRadius(center, radius);
+    this.selectFacesInRadius(center, radius);
+  }
+
+  /**
+   * Inverts the current selection
+   */
+  invertSelection(): void {
+    const allVertices = this.mesh.vertices.map((v) => v.id);
+    const allEdges = this.mesh.edges.map((e) => e.id);
+    const allFaces = this.mesh.faces.map((f) => f.id);
+
+    const invertedVertices = allVertices.filter((id) => !this.state.selectedVertices.has(id));
+    const invertedEdges = allEdges.filter((id) => !this.state.selectedEdges.has(id));
+    const invertedFaces = allFaces.filter((id) => !this.state.selectedFaces.has(id));
+
+    this.state.selectedVertices = new Set(invertedVertices);
+    this.state.selectedEdges = new Set(invertedEdges);
+    this.state.selectedFaces = new Set(invertedFaces);
+  }
+
+  /**
+   * Selects all elements
+   */
+  selectAll(): void {
+    this.state.selectedVertices = new Set(this.mesh.vertices.map((v) => v.id));
+    this.state.selectedEdges = new Set(this.mesh.edges.map((e) => e.id));
+    this.state.selectedFaces = new Set(this.mesh.faces.map((f) => f.id));
+  }
+
+  /**
+   * Expands selection to include connected elements
+   */
+  expandSelection(): void {
+    const newVertices = new Set(this.state.selectedVertices);
+    const newEdges = new Set(this.state.selectedEdges);
+    const newFaces = new Set(this.state.selectedFaces);
+
+    // Add vertices connected to selected edges
+    for (const edgeId of this.state.selectedEdges) {
+      const edge = this.mesh.getEdge(edgeId);
+      if (edge) {
+        edge.vertexIds.forEach((id) => newVertices.add(id));
+      }
+    }
+
+    // Add edges connected to selected vertices
+    for (const vertexId of this.state.selectedVertices) {
+      const edges = this.mesh.getEdgesContainingVertex(vertexId);
+      edges.forEach((id) => newEdges.add(id));
+    }
+
+    // Add faces connected to selected vertices
+    for (const vertexId of this.state.selectedVertices) {
+      const faces = this.mesh.getFacesContainingVertex(vertexId);
+      faces.forEach((id) => newFaces.add(id));
+    }
+
+    this.state.selectedVertices = newVertices;
+    this.state.selectedEdges = newEdges;
+    this.state.selectedFaces = newFaces;
+  }
+
+  /**
+   * Contracts selection to only include elements that are fully selected
+   */
+  contractSelection(): void {
+    const newVertices = new Set<number>();
+    const newEdges = new Set<number>();
+    const newFaces = new Set<number>();
+
+    // Only keep vertices that are part of selected edges
+    for (const edgeId of this.state.selectedEdges) {
+      const edge = this.mesh.getEdge(edgeId);
+      if (edge) {
+        edge.vertexIds.forEach((id) => newVertices.add(id));
+      }
+    }
+
+    // Only keep edges that are part of selected faces
+    for (const faceId of this.state.selectedFaces) {
+      const face = this.mesh.getFace(faceId);
+      if (face) {
+        face.edgeIds.forEach((id) => newEdges.add(id));
+      }
+    }
+
+    this.state.selectedVertices = newVertices;
+    this.state.selectedEdges = newEdges;
+  }
 }

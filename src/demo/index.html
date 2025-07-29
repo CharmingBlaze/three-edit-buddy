@@ -121,6 +121,30 @@
         border-color: transparent;
       }
 
+      .timeline-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 8px; /* Space for markers */
+      }
+
+      #timeline-slider {
+        width: 100%;
+        flex-grow: 1;
+      }
+
+      .keyframe-marker {
+        position: absolute;
+        bottom: 0px;
+        width: 8px;
+        height: 8px;
+        background-color: #667eea;
+        border-radius: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
       .info {
         position: absolute;
         bottom: 20px;
@@ -258,6 +282,24 @@
           </div>
 
           <div class="control-group">
+            <label>Snapping</label>
+            <div class="button-group">
+              <button id="snap-grid-btn">Grid Snap</button>
+              <button id="snap-vertex-btn">Vertex Snap</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Movement Constraints</label>
+            <div class="button-group">
+              <button id="constrain-none-btn" class="active">None</button>
+              <button id="constrain-x-btn">X-Axis</button>
+              <button id="constrain-y-btn">Y-Axis</button>
+              <button id="constrain-z-btn">Z-Axis</button>
+            </div>
+          </div>
+
+          <div class="control-group">
             <label>Selection Mode</label>
             <div class="button-group">
               <button id="select-faces-btn">Select Faces</button>
@@ -271,6 +313,33 @@
               <button id="extrude-btn">Extrude</button>
               <button id="subdivide-btn">Subdivide</button>
               <button id="merge-btn">Merge</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Mesh Tools</label>
+            <div class="button-group">
+                            <button id="subdivide-mesh-btn">Subdivide Mesh</button>
+              <button id="smooth-mesh-btn">Smooth Mesh</button>
+            </div>
+          </div>
+
+          <div class="control-group" id="animation-controls">
+            <label>Animation</label>
+            <div class="timeline-container">
+              <input type="range" id="timeline-slider" min="0" max="100" value="0">
+              <span id="current-frame-display">Frame: 0</span>
+            </div>
+            <div class="button-group">
+              <button id="play-pause-btn">Play</button>
+              <button id="add-keyframe-btn">Add Keyframe</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Export</label>
+            <div class="button-group">
+              <button id="export-obj-btn">Export OBJ</button>
             </div>
           </div>
         </div>
