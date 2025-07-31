@@ -15,6 +15,12 @@ export interface PrimitiveParams {
   };
 }
 
+/**
+ * Gold Standard Primitive Builder
+ * 
+ * Ensures each logical vertex is created only once and reused everywhere it's needed.
+ * All faces and edges reference vertices by ID, guaranteeing connected, Blender-style editing.
+ */
 export class PrimitiveBuilder {
   private mesh: EditableMesh;
   private vertexMap = new Map<string, number>(); // position hash -> vertex id
@@ -26,6 +32,7 @@ export class PrimitiveBuilder {
 
   /**
    * Add a vertex with automatic deduplication
+   * Returns the vertex ID, creating a new vertex only if one doesn't exist at this position
    */
   addVertex(position: Vector3Like, name?: string): number {
     const hash = this.positionHash(position);
@@ -41,6 +48,7 @@ export class PrimitiveBuilder {
 
   /**
    * Add an edge with automatic deduplication
+   * Returns the edge ID, creating a new edge only if one doesn't exist between these vertices
    */
   addEdge(vertexId1: number, vertexId2: number, name?: string): number {
     const hash = this.edgeHash(vertexId1, vertexId2);
@@ -55,7 +63,8 @@ export class PrimitiveBuilder {
   }
 
   /**
-   * Add a quad face (4 vertices)
+   * Add a quad face (4 vertices) with proper edge creation
+   * All vertices must be created via addVertex() first
    */
   addQuad(vertexIds: [number, number, number, number], name?: string): number {
     const edgeIds = [
@@ -70,7 +79,8 @@ export class PrimitiveBuilder {
   }
 
   /**
-   * Add a triangle face (3 vertices)
+   * Add a triangle face (3 vertices) with proper edge creation
+   * All vertices must be created via addVertex() first
    */
   addTriangle(vertexIds: [number, number, number], name?: string): number {
     const edgeIds = [
@@ -81,6 +91,75 @@ export class PrimitiveBuilder {
 
     const face = this.mesh.addFace(vertexIds, edgeIds, name);
     return face.id;
+  }
+
+  /**
+   * Add an n-gon face with proper edge creation
+   * All vertices must be created via addVertex() first
+   */
+  addNGon(vertexIds: number[], name?: string): number {
+    const edgeIds: number[] = [];
+    
+    for (let i = 0; i < vertexIds.length; i++) {
+      const nextI = (i + 1) % vertexIds.length;
+      edgeIds.push(this.addEdge(vertexIds[i], vertexIds[nextI]));
+    }
+
+    const face = this.mesh.addFace(vertexIds, edgeIds, name);
+    return face.id;
+  }
+
+  /**
+   * Create a grid of vertices with proper deduplication
+   * Returns a 2D array of vertex IDs
+   */
+  createVertexGrid(
+    width: number,
+    height: number,
+    widthSegments: number,
+    heightSegments: number,
+    positionFn: (x: number, y: number) => Vector3Like
+  ): number[][] {
+    const vertexIds: number[][] = [];
+
+    for (let y = 0; y <= heightSegments; y++) {
+      const row: number[] = [];
+      for (let x = 0; x <= widthSegments; x++) {
+        const u = x / widthSegments;
+        const v = y / heightSegments;
+        const position = positionFn(u, v);
+        row.push(this.addVertex(position));
+      }
+      vertexIds.push(row);
+    }
+
+    return vertexIds;
+  }
+
+  /**
+   * Create faces from a vertex grid
+   * Creates quads between adjacent vertices in the grid
+   */
+  createFacesFromGrid(vertexGrid: number[][], namePrefix?: string): number[] {
+    const faceIds: number[] = [];
+    const rows = vertexGrid.length;
+    const cols = vertexGrid[0]?.length || 0;
+
+    for (let row = 0; row < rows - 1; row++) {
+      for (let col = 0; col < cols - 1; col++) {
+        const v00 = vertexGrid[row]?.[col];
+        const v10 = vertexGrid[row]?.[col + 1];
+        const v11 = vertexGrid[row + 1]?.[col + 1];
+        const v01 = vertexGrid[row + 1]?.[col];
+
+        if (v00 !== undefined && v10 !== undefined && v11 !== undefined && v01 !== undefined) {
+          const faceId = this.addQuad([v00, v10, v11, v01], `${namePrefix || 'face'}-${row}-${col}`);
+          faceIds.push(faceId);
+        }
+      }
+    }
+
+    return faceIds;
   }
 
   /**
@@ -150,6 +229,38 @@ export class PrimitiveBuilder {
       const v = (Math.sin(angle) * 0.5 + 0.5) * scale.y + offset.y;
       this.addUV(ringVertexIds[i]!, u, v);
     }
+  }
+
+  /**
+   * Get vertex ID at a specific position, creating if necessary
+   */
+  getVertexAt(position: Vector3Like, name?: string): number {
+    return this.addVertex(position, name);
+  }
+
+  /**
+   * Get edge ID between two vertices, creating if necessary
+   */
+  getEdgeBetween(vertexId1: number, vertexId2: number, name?: string): number {
+    return this.addEdge(vertexId1, vertexId2, name);
+  }
+
+  /**
+   * Clear all cached data (useful for debugging)
+   */
+  clearCache(): void {
+    this.vertexMap.clear();
+    this.edgeMap.clear();
+  }
+
+  /**
+   * Get statistics about the builder's deduplication
+   */
+  getStats(): { vertexCacheSize: number; edgeCacheSize: number } {
+    return {
+      vertexCacheSize: this.vertexMap.size,
+      edgeCacheSize: this.edgeMap.size,
+    };
   }
 
   private positionHash(position: Vector3Like): string {

@@ -1,8 +1,12 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
+import { PrimitiveBuilder } from '../core/PrimitiveBuilder.js';
 import type { PlaneParams } from '../core/ParamTypes.js';
 
 /**
- * Creates a plane primitive
+ * Creates a plane primitive following the gold standard:
+ * - Each logical vertex is created only once
+ * - All faces and edges reference vertices by ID
+ * - Guarantees connected, Blender-style editing
  */
 export function createPlane(params: PlaneParams = {}): EditableMesh {
   const { 
@@ -14,38 +18,23 @@ export function createPlane(params: PlaneParams = {}): EditableMesh {
   const halfHeight = height / 2;
 
   const mesh = new EditableMesh();
+  const builder = new PrimitiveBuilder(mesh);
 
-  // Create vertices
-  const vertices = [
-    {
-      id: mesh.addVertex({ x: -halfWidth, y: 0, z: -halfHeight }).id,
-      position: { x: -halfWidth, y: 0, z: -halfHeight },
-    }, // 0
-    {
-      id: mesh.addVertex({ x: halfWidth, y: 0, z: -halfHeight }).id,
-      position: { x: halfWidth, y: 0, z: -halfHeight },
-    }, // 1
-    {
-      id: mesh.addVertex({ x: halfWidth, y: 0, z: halfHeight }).id,
-      position: { x: halfWidth, y: 0, z: halfHeight },
-    }, // 2
-    {
-      id: mesh.addVertex({ x: -halfWidth, y: 0, z: halfHeight }).id,
-      position: { x: -halfWidth, y: 0, z: halfHeight },
-    }, // 3
-  ];
+  // Create 4 unique vertices for the plane using the builder's deduplication
+  const vertexIds = {
+    bottomLeft: builder.addVertex({ x: -halfWidth, y: 0, z: -halfHeight }, 'bottom-left'),
+    bottomRight: builder.addVertex({ x: halfWidth, y: 0, z: -halfHeight }, 'bottom-right'),
+    topRight: builder.addVertex({ x: halfWidth, y: 0, z: halfHeight }, 'top-right'),
+    topLeft: builder.addVertex({ x: -halfWidth, y: 0, z: halfHeight }, 'top-left'),
+  };
 
-  // Create face
-  mesh.addFace(
-    [vertices[0]!.id, vertices[1]!.id, vertices[2]!.id, vertices[3]!.id],
-    []
-  );
-
-  // Add edges for plane
-  mesh.addEdge(vertices[0]!.id, vertices[1]!.id);
-  mesh.addEdge(vertices[1]!.id, vertices[2]!.id);
-  mesh.addEdge(vertices[2]!.id, vertices[3]!.id);
-  mesh.addEdge(vertices[3]!.id, vertices[0]!.id);
+  // Create a single quad face with proper edge creation
+  builder.addQuad([
+    vertexIds.bottomLeft,
+    vertexIds.bottomRight,
+    vertexIds.topRight,
+    vertexIds.topLeft
+  ], 'plane');
 
   return mesh;
 }

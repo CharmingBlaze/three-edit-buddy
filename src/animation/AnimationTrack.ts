@@ -31,25 +31,26 @@ export class AnimationTrack {
     }
 
     if (this.keyframes.length === 1) {
-      return this.keyframes[0].vertexPositions;
+      return this.keyframes[0]?.vertexPositions ?? null;
     }
 
     // Find the two keyframes to interpolate between
-    let prevKeyframe = this.keyframes[0];
-    let nextKeyframe = this.keyframes[this.keyframes.length - 1];
+    let prevKeyframe: Keyframe | undefined = this.keyframes[0];
+    let nextKeyframe: Keyframe | undefined = this.keyframes[this.keyframes.length - 1];
 
     for (let i = 0; i < this.keyframes.length; i++) {
-      if (this.keyframes[i].frame <= frame) {
-        prevKeyframe = this.keyframes[i];
+      const keyframe = this.keyframes[i];
+      if (keyframe && keyframe.frame <= frame) {
+        prevKeyframe = keyframe;
       }
-      if (this.keyframes[i].frame > frame) {
-        nextKeyframe = this.keyframes[i];
+      if (keyframe && keyframe.frame > frame) {
+        nextKeyframe = keyframe;
         break;
       }
     }
 
-    if (prevKeyframe === nextKeyframe) {
-      return prevKeyframe.vertexPositions;
+    if (!prevKeyframe || !nextKeyframe || prevKeyframe === nextKeyframe) {
+      return prevKeyframe?.vertexPositions ?? null;
     }
 
     const frameDiff = nextKeyframe.frame - prevKeyframe.frame;

@@ -1,4 +1,5 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
+import { PrimitiveBuilder } from '../core/PrimitiveBuilder.js';
 
 export interface PyramidParams {
   size?: number;
@@ -6,62 +7,63 @@ export interface PyramidParams {
 }
 
 /**
- * Creates a pyramid primitive with a square base
+ * Creates a pyramid primitive following the gold standard:
+ * - Each logical vertex is created only once
+ * - All faces and edges reference vertices by ID
+ * - Guarantees connected, Blender-style editing
  */
 export function createPyramid(params: PyramidParams = {}): EditableMesh {
   const { size = 1, height = 1 } = params;
 
   const mesh = new EditableMesh();
+  const builder = new PrimitiveBuilder(mesh);
   const halfSize = size / 2;
   const halfHeight = height / 2;
 
-  // Create vertices
-  const vertices = [
-    // Base
-    {
-      id: mesh.addVertex({ x: -halfSize, y: -halfHeight, z: -halfSize }).id,
-      position: { x: -halfSize, y: -halfHeight, z: -halfSize },
-    }, // 0
-    {
-      id: mesh.addVertex({ x: halfSize, y: -halfHeight, z: -halfSize }).id,
-      position: { x: halfSize, y: -halfHeight, z: -halfSize },
-    }, // 1
-    {
-      id: mesh.addVertex({ x: halfSize, y: -halfHeight, z: halfSize }).id,
-      position: { x: halfSize, y: -halfHeight, z: halfSize },
-    }, // 2
-    {
-      id: mesh.addVertex({ x: -halfSize, y: -halfHeight, z: halfSize }).id,
-      position: { x: -halfSize, y: -halfHeight, z: halfSize },
-    }, // 3
-    // Top
-    {
-      id: mesh.addVertex({ x: 0, y: halfHeight, z: 0 }).id,
-      position: { x: 0, y: halfHeight, z: 0 },
-    }, // 4
-  ];
+  // Create 5 unique vertices for the pyramid using the builder's deduplication
+  const vertexIds = {
+    // Base vertices
+    baseBottomLeft: builder.addVertex({ x: -halfSize, y: -halfHeight, z: -halfSize }, 'base-bottom-left'),
+    baseBottomRight: builder.addVertex({ x: halfSize, y: -halfHeight, z: -halfSize }, 'base-bottom-right'),
+    baseTopRight: builder.addVertex({ x: halfSize, y: -halfHeight, z: halfSize }, 'base-top-right'),
+    baseTopLeft: builder.addVertex({ x: -halfSize, y: -halfHeight, z: halfSize }, 'base-top-left'),
+    
+    // Apex vertex
+    apex: builder.addVertex({ x: 0, y: halfHeight, z: 0 }, 'apex'),
+  };
 
-  // Create faces
-  mesh.addFace(
-    [vertices[0]!.id, vertices[1]!.id, vertices[2]!.id, vertices[3]!.id],
-    []
-  ); // Base
-  mesh.addFace([vertices[0]!.id, vertices[1]!.id, vertices[4]!.id], []); // Side 1
-  mesh.addFace([vertices[1]!.id, vertices[2]!.id, vertices[4]!.id], []); // Side 2
-  mesh.addFace([vertices[2]!.id, vertices[3]!.id, vertices[4]!.id], []); // Side 3
-  mesh.addFace([vertices[3]!.id, vertices[0]!.id, vertices[4]!.id], []); // Side 4
+  // Create base face (quad)
+  builder.addQuad([
+    vertexIds.baseBottomLeft,
+    vertexIds.baseBottomRight,
+    vertexIds.baseTopRight,
+    vertexIds.baseTopLeft
+  ], 'base');
 
-  // Add edges for base
-  mesh.addEdge(vertices[0]!.id, vertices[1]!.id);
-  mesh.addEdge(vertices[1]!.id, vertices[2]!.id);
-  mesh.addEdge(vertices[2]!.id, vertices[3]!.id);
-  mesh.addEdge(vertices[3]!.id, vertices[0]!.id);
+  // Create side faces (triangles)
+  builder.addTriangle([
+    vertexIds.baseBottomLeft,
+    vertexIds.baseBottomRight,
+    vertexIds.apex
+  ], 'side-1');
 
-  // Add edges for sides
-  mesh.addEdge(vertices[0]!.id, vertices[4]!.id);
-  mesh.addEdge(vertices[1]!.id, vertices[4]!.id);
-  mesh.addEdge(vertices[2]!.id, vertices[4]!.id);
-  mesh.addEdge(vertices[3]!.id, vertices[4]!.id);
+  builder.addTriangle([
+    vertexIds.baseBottomRight,
+    vertexIds.baseTopRight,
+    vertexIds.apex
+  ], 'side-2');
+
+  builder.addTriangle([
+    vertexIds.baseTopRight,
+    vertexIds.baseTopLeft,
+    vertexIds.apex
+  ], 'side-3');
+
+  builder.addTriangle([
+    vertexIds.baseTopLeft,
+    vertexIds.baseBottomLeft,
+    vertexIds.apex
+  ], 'side-4');
 
   return mesh;
 }

@@ -1,100 +1,88 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
+import { PrimitiveBuilder } from '../core/PrimitiveBuilder.js';
 
 export interface CubeParams {
   size?: number;
 }
 
 /**
- * Creates a cube primitive with shared vertices
+ * Creates a cube primitive following the gold standard:
+ * - Each logical vertex is created only once
+ * - All faces and edges reference vertices by ID
+ * - Guarantees connected, Blender-style editing
  */
 export function createCube(params: CubeParams = {}): EditableMesh {
   const { size = 1 } = params;
   const halfSize = size / 2;
 
   const mesh = new EditableMesh();
+  const builder = new PrimitiveBuilder(mesh);
 
-  // Create 8 unique vertices for the cube
-  const vertices = [
-    // Front face
-    {
-      id: mesh.addVertex({ x: -halfSize, y: -halfSize, z: halfSize }).id,
-      position: { x: -halfSize, y: -halfSize, z: halfSize },
-    }, // 0
-    {
-      id: mesh.addVertex({ x: halfSize, y: -halfSize, z: halfSize }).id,
-      position: { x: halfSize, y: -halfSize, z: halfSize },
-    }, // 1
-    {
-      id: mesh.addVertex({ x: halfSize, y: halfSize, z: halfSize }).id,
-      position: { x: halfSize, y: halfSize, z: halfSize },
-    }, // 2
-    {
-      id: mesh.addVertex({ x: -halfSize, y: halfSize, z: halfSize }).id,
-      position: { x: -halfSize, y: halfSize, z: halfSize },
-    }, // 3
-    // Back face
-    {
-      id: mesh.addVertex({ x: -halfSize, y: -halfSize, z: -halfSize }).id,
-      position: { x: -halfSize, y: -halfSize, z: -halfSize },
-    }, // 4
-    {
-      id: mesh.addVertex({ x: halfSize, y: -halfSize, z: -halfSize }).id,
-      position: { x: halfSize, y: -halfSize, z: -halfSize },
-    }, // 5
-    {
-      id: mesh.addVertex({ x: halfSize, y: halfSize, z: -halfSize }).id,
-      position: { x: halfSize, y: halfSize, z: -halfSize },
-    }, // 6
-    {
-      id: mesh.addVertex({ x: -halfSize, y: halfSize, z: -halfSize }).id,
-      position: { x: -halfSize, y: halfSize, z: -halfSize },
-    }, // 7
-  ];
+  // Create 8 unique vertices for the cube using the builder's deduplication
+  const vertexIds = {
+    // Front face vertices
+    frontBottomLeft: builder.addVertex({ x: -halfSize, y: -halfSize, z: halfSize }, 'front-bottom-left'),
+    frontBottomRight: builder.addVertex({ x: halfSize, y: -halfSize, z: halfSize }, 'front-bottom-right'),
+    frontTopRight: builder.addVertex({ x: halfSize, y: halfSize, z: halfSize }, 'front-top-right'),
+    frontTopLeft: builder.addVertex({ x: -halfSize, y: halfSize, z: halfSize }, 'front-top-left'),
+    
+    // Back face vertices
+    backBottomLeft: builder.addVertex({ x: -halfSize, y: -halfSize, z: -halfSize }, 'back-bottom-left'),
+    backBottomRight: builder.addVertex({ x: halfSize, y: -halfSize, z: -halfSize }, 'back-bottom-right'),
+    backTopRight: builder.addVertex({ x: halfSize, y: halfSize, z: -halfSize }, 'back-top-right'),
+    backTopLeft: builder.addVertex({ x: -halfSize, y: halfSize, z: -halfSize }, 'back-top-left'),
+  };
 
-  // Create edges
-  const edges = [];
-  // Front face edges
-  edges.push(mesh.addEdge(vertices[0]!.id, vertices[1]!.id));
-  edges.push(mesh.addEdge(vertices[1]!.id, vertices[2]!.id));
-  edges.push(mesh.addEdge(vertices[2]!.id, vertices[3]!.id));
-  edges.push(mesh.addEdge(vertices[3]!.id, vertices[0]!.id));
-  // Back face edges
-  edges.push(mesh.addEdge(vertices[4]!.id, vertices[5]!.id));
-  edges.push(mesh.addEdge(vertices[5]!.id, vertices[6]!.id));
-  edges.push(mesh.addEdge(vertices[6]!.id, vertices[7]!.id));
-  edges.push(mesh.addEdge(vertices[7]!.id, vertices[4]!.id));
-  // Connecting edges
-  edges.push(mesh.addEdge(vertices[0]!.id, vertices[4]!.id));
-  edges.push(mesh.addEdge(vertices[1]!.id, vertices[5]!.id));
-  edges.push(mesh.addEdge(vertices[2]!.id, vertices[6]!.id));
-  edges.push(mesh.addEdge(vertices[3]!.id, vertices[7]!.id));
+  // Create 6 quad faces with proper edge creation
+  // Each face automatically creates its edges with deduplication
+  
+  // Front face
+  builder.addQuad([
+    vertexIds.frontBottomLeft,
+    vertexIds.frontBottomRight,
+    vertexIds.frontTopRight,
+    vertexIds.frontTopLeft
+  ], 'front');
 
-  // Create faces (6 quads)
-  const edgeIds = edges.map((e) => e.id);
-  mesh.addFace(
-    [vertices[0]!.id, vertices[1]!.id, vertices[2]!.id, vertices[3]!.id],
-    [edgeIds[0]!, edgeIds[1]!, edgeIds[2]!, edgeIds[3]!]
-  ); // Front
-  mesh.addFace(
-    [vertices[5]!.id, vertices[4]!.id, vertices[7]!.id, vertices[6]!.id],
-    [edgeIds[4]!, edgeIds[7]!, edgeIds[6]!, edgeIds[5]!]
-  ); // Back
-  mesh.addFace(
-    [vertices[4]!.id, vertices[0]!.id, vertices[3]!.id, vertices[7]!.id],
-    [edgeIds[8]!, edgeIds[3]!, edgeIds[11]!, edgeIds[7]!]
-  ); // Left
-  mesh.addFace(
-    [vertices[1]!.id, vertices[5]!.id, vertices[6]!.id, vertices[2]!.id],
-    [edgeIds[1]!, edgeIds[9]!, edgeIds[5]!, edgeIds[2]!]
-  ); // Right
-  mesh.addFace(
-    [vertices[3]!.id, vertices[2]!.id, vertices[6]!.id, vertices[7]!.id],
-    [edgeIds[2]!, edgeIds[10]!, edgeIds[6]!, edgeIds[11]!]
-  ); // Top
-  mesh.addFace(
-    [vertices[4]!.id, vertices[5]!.id, vertices[1]!.id, vertices[0]!.id],
-    [edgeIds[4]!, edgeIds[9]!, edgeIds[0]!, edgeIds[8]!]
-  ); // Bottom
+  // Back face
+  builder.addQuad([
+    vertexIds.backBottomRight,
+    vertexIds.backBottomLeft,
+    vertexIds.backTopLeft,
+    vertexIds.backTopRight
+  ], 'back');
+
+  // Left face
+  builder.addQuad([
+    vertexIds.backBottomLeft,
+    vertexIds.frontBottomLeft,
+    vertexIds.frontTopLeft,
+    vertexIds.backTopLeft
+  ], 'left');
+
+  // Right face
+  builder.addQuad([
+    vertexIds.frontBottomRight,
+    vertexIds.backBottomRight,
+    vertexIds.backTopRight,
+    vertexIds.frontTopRight
+  ], 'right');
+
+  // Top face
+  builder.addQuad([
+    vertexIds.frontTopLeft,
+    vertexIds.frontTopRight,
+    vertexIds.backTopRight,
+    vertexIds.backTopLeft
+  ], 'top');
+
+  // Bottom face
+  builder.addQuad([
+    vertexIds.backBottomLeft,
+    vertexIds.backBottomRight,
+    vertexIds.frontBottomRight,
+    vertexIds.frontBottomLeft
+  ], 'bottom');
 
   return mesh;
 }

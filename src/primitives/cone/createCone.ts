@@ -1,4 +1,5 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
+import { PrimitiveBuilder } from '../core/PrimitiveBuilder.js';
 import { Vector3Like } from '../../types/index.js';
 
 export interface ConeParams {
@@ -8,55 +9,46 @@ export interface ConeParams {
 }
 
 /**
- * Creates a cone primitive with a base
+ * Creates a cone primitive following the gold standard:
+ * - Each logical vertex is created only once
+ * - All faces and edges reference vertices by ID
+ * - Guarantees connected, Blender-style editing
  */
 export function createCone(params: ConeParams = {}): EditableMesh {
   const { radius = 0.5, height = 1, segments = 8 } = params;
 
   const mesh = new EditableMesh();
+  const builder = new PrimitiveBuilder(mesh);
   const halfHeight = height / 2;
 
-  // Create vertices
-  const vertices: { id: number; position: Vector3Like }[] = [];
+  // Create top vertex (apex)
+  const apexVertexId = builder.addVertex({ x: 0, y: halfHeight, z: 0 }, 'apex');
 
-  // Top vertex
-  vertices.push({
-    id: mesh.addVertex({ x: 0, y: halfHeight, z: 0 }).id,
-    position: { x: 0, y: halfHeight, z: 0 },
-  });
-
-  // Bottom ring
+  // Create bottom ring vertices
+  const bottomRingVertexIds: number[] = [];
   for (let seg = 0; seg < segments; seg++) {
     const theta = (2 * Math.PI * seg) / segments;
     const x = radius * Math.cos(theta);
     const z = radius * Math.sin(theta);
-    vertices.push({
-      id: mesh.addVertex({ x, y: -halfHeight, z }).id,
-      position: { x, y: -halfHeight, z },
-    });
-  }
-
-  // Create faces
-  for (let seg = 0; seg < segments; seg++) {
-    const nextSeg = (seg + 1) % segments;
-
-    // Side face
-    mesh.addFace(
-      [vertices[0]!.id, vertices[1 + seg]!.id, vertices[1 + nextSeg]!.id],
-      []
+    bottomRingVertexIds.push(
+      builder.addVertex({ x, y: -halfHeight, z }, `bottom-ring-${seg}`)
     );
-
-    // Add edges for side face
-    mesh.addEdge(vertices[0]!.id, vertices[1 + seg]!.id);
-    mesh.addEdge(vertices[1 + seg]!.id, vertices[1 + nextSeg]!.id);
-    mesh.addEdge(vertices[1 + nextSeg]!.id, vertices[0]!.id);
   }
 
-  // Add edges for bottom ring
+  // Create side faces (triangles)
   for (let seg = 0; seg < segments; seg++) {
     const nextSeg = (seg + 1) % segments;
-    mesh.addEdge(vertices[1 + seg]!.id, vertices[1 + nextSeg]!.id);
+
+    builder.addTriangle([
+      apexVertexId,
+      bottomRingVertexIds[seg],
+      bottomRingVertexIds[nextSeg]
+    ], `side-${seg}`);
   }
+
+  // Create bottom cap face (n-gon, reversed winding for proper orientation)
+  const bottomCapVertexIds = [...bottomRingVertexIds].reverse();
+  builder.addNGon(bottomCapVertexIds, 'bottom-cap');
 
   return mesh;
 }

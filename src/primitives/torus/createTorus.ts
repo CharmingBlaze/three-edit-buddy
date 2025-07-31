@@ -1,4 +1,5 @@
 import { EditableMesh } from '../../core/EditableMesh.js';
+import { PrimitiveBuilder } from '../core/PrimitiveBuilder.js';
 import type { Vector3Like } from '../../types/index.js';
 
 export interface TorusParams {
@@ -11,7 +12,10 @@ export interface TorusParams {
 }
 
 /**
- * Creates a torus (donut) primitive
+ * Creates a torus (donut) primitive following the gold standard:
+ * - Each logical vertex is created only once
+ * - All faces and edges reference vertices by ID
+ * - Guarantees connected, Blender-style editing
  */
 export function createTorus(params: TorusParams = {}): EditableMesh {
   const {
@@ -24,52 +28,34 @@ export function createTorus(params: TorusParams = {}): EditableMesh {
   } = params;
 
   const mesh = new EditableMesh();
+  const builder = new PrimitiveBuilder(mesh);
 
-  // Create vertices
-  const vertices: { id: number; position: Vector3Like }[] = [];
-
-  for (let i = 0; i <= radialSegments; i++) {
-    const u = arcStart + (i / radialSegments) * arcLength;
-    const cosU = Math.cos(u);
-    const sinU = Math.sin(u);
-
-    for (let j = 0; j <= tubularSegments; j++) {
-      const v = (j / tubularSegments) * Math.PI * 2;
-      const cosV = Math.cos(v);
-      const sinV = Math.sin(v);
-
-      const x = (radius + tubeRadius * cosV) * cosU;
-      const y = (radius + tubeRadius * cosV) * sinU;
-      const z = tubeRadius * sinV;
-
-      vertices.push({
-        id: mesh.addVertex({ x, y, z }).id,
-        position: { x, y, z },
-      });
+  // Create vertex grid for the torus
+  const vertexGrid = builder.createVertexGrid(
+    2 * Math.PI * radius, // width
+    2 * Math.PI * tubeRadius, // height
+    radialSegments, // widthSegments
+    tubularSegments, // heightSegments
+    (u: number, v: number) => {
+      // Convert grid coordinates to toroidal coordinates
+      const radialAngle = arcStart + u * arcLength; // u maps to radial angle
+      const tubularAngle = v * 2 * Math.PI; // v maps to tubular angle
+      
+      const cosRadial = Math.cos(radialAngle);
+      const sinRadial = Math.sin(radialAngle);
+      const cosTubular = Math.cos(tubularAngle);
+      const sinTubular = Math.sin(tubularAngle);
+      
+      const x = (radius + tubeRadius * cosTubular) * cosRadial;
+      const y = (radius + tubeRadius * cosTubular) * sinRadial;
+      const z = tubeRadius * sinTubular;
+      
+      return { x, y, z };
     }
-  }
+  );
 
-  // Create faces and edges
-  for (let i = 0; i < radialSegments; i++) {
-    for (let j = 0; j < tubularSegments; j++) {
-      const a = i * (tubularSegments + 1) + j;
-      const b = (i + 1) * (tubularSegments + 1) + j;
-      const c = (i + 1) * (tubularSegments + 1) + j + 1;
-      const d = i * (tubularSegments + 1) + j + 1;
-
-      // Create quad face
-      mesh.addFace(
-        [vertices[a]!.id, vertices[b]!.id, vertices[c]!.id, vertices[d]!.id],
-        []
-      );
-
-      // Add edges for this face
-      mesh.addEdge(vertices[a]!.id, vertices[b]!.id);
-      mesh.addEdge(vertices[b]!.id, vertices[c]!.id);
-      mesh.addEdge(vertices[c]!.id, vertices[d]!.id);
-      mesh.addEdge(vertices[d]!.id, vertices[a]!.id);
-    }
-  }
+  // Create faces from the vertex grid
+  builder.createFacesFromGrid(vertexGrid, 'torus-face');
 
   return mesh;
 } 

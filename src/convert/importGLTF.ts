@@ -1,5 +1,5 @@
 import { EditableMesh } from '../core/EditableMesh.js';
-import type { Vector3Like, Vector2Like } from '../types/index.js';
+import type { Vector3Like } from '../types/index.js';
 
 /**
  * Options for GLTF import
@@ -64,9 +64,8 @@ export function importGLTF(
   // Import materials
   if (importMaterials && gltf.materials) {
     for (const gltfMaterial of gltf.materials) {
-      const material = {
+      const material: GLTFImportResult['materials'][0] = {
         name: gltfMaterial.name || 'material',
-        color: undefined as Vector3Like | undefined,
         opacity: 1.0,
         transparent: false,
         metalness: 0.0,
@@ -87,7 +86,7 @@ export function importGLTF(
         material.roughness = pbr.roughnessFactor ?? 0.5;
       }
 
-      if (gltfMaterial.alphaMode === 'BLEND' || material.opacity < 1.0) {
+      if (gltfMaterial.alphaMode === 'BLEND' || (material.opacity ?? 1.0) < 1.0) {
         material.transparent = true;
       }
 
@@ -154,9 +153,17 @@ function importMeshPrimitive(
 
   // Process vertices
   for (let i = 0; i < positions.length; i += 3) {
-    const x = positions[i] * scale;
-    const y = positions[i + 1] * scale;
-    const z = positions[i + 2] * scale;
+    const px = positions[i];
+    const py = positions[i + 1];
+    const pz = positions[i + 2];
+    
+    if (px === undefined || py === undefined || pz === undefined) {
+      continue;
+    }
+    
+    const x = px * scale;
+    const y = py * scale;
+    const z = pz * scale;
 
     let vertexId: number;
 
@@ -167,32 +174,52 @@ function importMeshPrimitive(
       if (vertexMap.has(key)) {
         vertexId = vertexMap.get(key)!;
       } else {
-        vertexId = mesh.addVertex({ x, y, z });
+        const vertex = mesh.addVertex({ x, y, z });
+        vertexId = vertex.id;
         vertexMap.set(key, vertexId);
         vertices.push(x, y, z);
         
         // Add normal if available
         if (normals) {
-          vertexNormals.push(normals[i], normals[i + 1], normals[i + 2]);
+          const nx = normals[i];
+          const ny = normals[i + 1];
+          const nz = normals[i + 2];
+          if (nx !== undefined && ny !== undefined && nz !== undefined) {
+            vertexNormals.push(nx, ny, nz);
+          }
         }
         
         // Add UV if available
         if (uvs) {
           const uvIndex = (i / 3) * 2;
-          vertexUVs.push(uvs[uvIndex], uvs[uvIndex + 1]);
+          const ux = uvs[uvIndex];
+          const uy = uvs[uvIndex + 1];
+          if (ux !== undefined && uy !== undefined) {
+            vertexUVs.push(ux, uy);
+          }
         }
       }
     } else {
-      vertexId = mesh.addVertex({ x, y, z });
+      const vertex = mesh.addVertex({ x, y, z });
+      vertexId = vertex.id;
       vertices.push(x, y, z);
       
       if (normals) {
-        vertexNormals.push(normals[i], normals[i + 1], normals[i + 2]);
+        const nx = normals[i];
+        const ny = normals[i + 1];
+        const nz = normals[i + 2];
+        if (nx !== undefined && ny !== undefined && nz !== undefined) {
+          vertexNormals.push(nx, ny, nz);
+        }
       }
       
       if (uvs) {
         const uvIndex = (i / 3) * 2;
-        vertexUVs.push(uvs[uvIndex], uvs[uvIndex + 1]);
+        const ux = uvs[uvIndex];
+        const uy = uvs[uvIndex + 1];
+        if (ux !== undefined && uy !== undefined) {
+          vertexUVs.push(ux, uy);
+        }
       }
     }
   }
@@ -201,28 +228,47 @@ function importMeshPrimitive(
   if (indices) {
     // Indexed geometry
     for (let i = 0; i < indices.length; i += 3) {
-      const v1 = indices[i];
-      const v2 = indices[i + 1];
-      const v3 = indices[i + 2];
+      const v1Index = indices[i];
+      const v2Index = indices[i + 1];
+      const v3Index = indices[i + 2];
+      
+      // Check if indices are valid numbers
+      if (v1Index === undefined || v2Index === undefined || v3Index === undefined) {
+        continue;
+      }
       
       // Get actual vertex IDs from the map
-      const vertex1 = mesh.vertices[v1];
-      const vertex2 = mesh.vertices[v2];
-      const vertex3 = mesh.vertices[v3];
+      const vertex1 = mesh.vertices[v1Index];
+      const vertex2 = mesh.vertices[v2Index];
+      const vertex3 = mesh.vertices[v3Index];
       
       if (vertex1 && vertex2 && vertex3) {
-        mesh.addFace([vertex1.id, vertex2.id, vertex3.id]);
+        // Create edges for the face
+        const edge1 = mesh.addEdge(vertex1.id, vertex2.id);
+        const edge2 = mesh.addEdge(vertex2.id, vertex3.id);
+        const edge3 = mesh.addEdge(vertex3.id, vertex1.id);
+        
+        mesh.addFace([vertex1.id, vertex2.id, vertex3.id], [edge1.id, edge2.id, edge3.id]);
       }
     }
   } else {
     // Non-indexed geometry (triangle list)
     for (let i = 0; i < vertices.length; i += 9) {
-      const v1 = mesh.vertices[i / 3];
-      const v2 = mesh.vertices[i / 3 + 1];
-      const v3 = mesh.vertices[i / 3 + 2];
+      const vertexIndex1 = i / 3;
+      const vertexIndex2 = vertexIndex1 + 1;
+      const vertexIndex3 = vertexIndex1 + 2;
+      
+      const v1 = mesh.vertices[vertexIndex1];
+      const v2 = mesh.vertices[vertexIndex2];
+      const v3 = mesh.vertices[vertexIndex3];
       
       if (v1 && v2 && v3) {
-        mesh.addFace([v1.id, v2.id, v3.id]);
+        // Create edges for the face
+        const edge1 = mesh.addEdge(v1.id, v2.id);
+        const edge2 = mesh.addEdge(v2.id, v3.id);
+        const edge3 = mesh.addEdge(v3.id, v1.id);
+        
+        mesh.addFace([v1.id, v2.id, v3.id], [edge1.id, edge2.id, edge3.id]);
       }
     }
   }
@@ -230,10 +276,17 @@ function importMeshPrimitive(
   // Add UVs if available
   if (uvs && vertexUVs.length > 0) {
     for (let i = 0; i < vertexUVs.length; i += 2) {
-      mesh.addUV({
-        position: { x: vertexUVs[i], y: vertexUVs[i + 1] },
-        vertexId: i / 2,
-      });
+      const vertexIndex = i / 2;
+      if (vertexIndex < mesh.vertices.length) {
+        const uvX = vertexUVs[i];
+        const uvY = vertexUVs[i + 1];
+        if (uvX !== undefined && uvY !== undefined) {
+          mesh.addUV(vertexIndex, {
+            x: uvX,
+            y: uvY,
+          });
+        }
+      }
     }
   }
 }
@@ -312,7 +365,7 @@ function getBufferData(gltf: any, accessor: any, type: string): number[] {
   }
   
   // Calculate the actual offset within the buffer
-  const bufferOffset = bufferView.byteOffset + accessor.byteOffset;
+  const bufferOffset = (bufferView.byteOffset || 0) + (accessor.byteOffset || 0);
   const bufferLength = bufferView.byteLength;
   
   // Ensure we don't exceed buffer bounds

@@ -1,7 +1,7 @@
 import type { EditableMesh, Vector3Like } from '../types/index.js';
 import { exportOBJ, exportOBJWithUVs, exportOBJWithMaterials } from './exportOBJ.js';
 import { exportGLTF, exportGLTFBinary, GLTFExportOptions } from './exportGLTF.js';
-import { importGLTF, GLTFImportOptions, GLTFImportResult } from './importGLTF.js';
+import { importGLTF, GLTFImportOptions } from './importGLTF.js';
 
 /**
  * Supported export formats
@@ -73,7 +73,7 @@ export function exportMesh(
   mesh: EditableMesh,
   options: ExportOptions
 ): ExportResult {
-  const { format, gltf, includeUVs = true, includeMaterials = true } = options;
+  const { format, gltf } = options;
 
   switch (format) {
     case 'obj':
